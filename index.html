@@ -344,7 +344,7 @@
 
                 document.getElementById('prev').value = item.prevCGPA || 0;
                 document.getElementById('prev_creds').value = item.prevCredits || 0;
-                
+
 
                 creditsSelect.addEventListener('change', checkForNewPair);
                 gradesSelect.addEventListener('change', checkForNewPair);
@@ -388,6 +388,8 @@
             result_cgpa.classList.remove('hidden');
             result_cgpa.style.backgroundColor = overallCGPA >= 9 ? 'green' : overallCGPA >= 8 ? 'orange' : overallCGPA >= 6 ? 'crimson' : 'darkred';
             result_cgpa.innerHTML = `Your Overall CGPA is: ${overallCGPA}`;
+
+            result_gpa.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         // calculateBtn.removeEventListener('click', calculateGPA);
