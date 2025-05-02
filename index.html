@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIT CGPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(53, 61, 69);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            flex-direction: column;
+            height: 100svh;
+            color: white;
+        }
+
+        #input-container {
+            margin-bottom: 20px;
+        }
+
+        .input-pair {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            width: 100px;
+            cursor: pointer;
+
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007BFF;
+        }
+
+        button {
+            padding: 20px 25px;
+            background-color: #007BFF;
+            border-radius: 50px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+
+        }
+
+        .sub {
+            font-size: 0.7rem;
+            color: gray;
+        }
+
+        h1 {
+            font-size: 3rem;
+
+        }
+        #result {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-top: 20%;
+            color: white;
+            
+            
+            font-weight: 600;
+            border: solid 1px #ffffff;
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        .btn-container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            /* select {
+                width: 80px;
+            } */
+
+            button {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="text-align: center;">
+        <h1>VIT CGPA Calculator</h1>
+        <p class="sub">Select the credits and grades for each subject.</p>
+        <p class="sub">Click "Calculate GPA" to see your result.</p>
+        <p class="sub">More subjects will be automatically added. Max 10 subjects</p>
+        <p class="sub">Note: 0 credits and 0 grade will not be counted.</p>
+        <h3 style="margin-top: 20px;margin-bottom: 0;">Total Credits: <span class='total-credits'>0</span></h3>
+    </div>
+    <div id="input-container">
+        <div class="input-pair">
+            <select class="credits">
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+            </select>
+            <select class="grades">
+                <option value="0">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+            </select>
+        </div>
+    </div>
+    <div class="btn-container">
+        <button id="calculate-btn">Calculate GPA</button>
+        <p id="result" class="hidden"></p>
+
+    </div>
+
+    <script>
+        const inputContainer = document.getElementById('input-container');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const result = document.getElementById('result');
+
+        function createInputPair() {
+            const inputPair = document.createElement('div');
+            inputPair.className = 'input-pair';
+
+            const creditsSelect = document.createElement('select');
+            creditsSelect.className = 'credits';
+            creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+            `;
+
+            const gradesSelect = document.createElement('select');
+            gradesSelect.className = 'grades';
+            gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+            `;
+
+            inputPair.appendChild(creditsSelect);
+            inputPair.appendChild(gradesSelect);
+            inputContainer.appendChild(inputPair);
+
+            creditsSelect.addEventListener('change', checkForNewPair);
+            gradesSelect.addEventListener('change', checkForNewPair);
+        }
+
+        function checkForNewPair() {
+            const pairs = document.querySelectorAll('.input-pair');
+            const lastPair = pairs[pairs.length - 1];
+            const credits = lastPair.querySelector('.credits').value;
+            const grades = lastPair.querySelector('.grades').value;
+            const totalCredits = Array.from(pairs).reduce((sum, pair) => {
+                return sum + parseFloat(pair.querySelector('.credits').value) || 0;
+            }, 0);
+            document.querySelector('.total-credits').textContent = totalCredits;
+            if (credits !== "0" && grades !== "-1" && pairs.length < 10) {
+                createInputPair();
+            }
+        }
+
+        function calculateGPA() {
+            const pairs = document.querySelectorAll('.input-pair');
+            let totalCredits = 0;
+            let weightedSum = 0;
+
+            pairs.forEach(pair => {
+                const credits = parseFloat(pair.querySelector('.credits').value);
+                const grade = parseInt(pair.querySelector('.grades').value);
+
+                if (credits > 0 && grade >= 0) {
+                    totalCredits += credits;
+                    weightedSum += credits * grade;
+                }
+            });
+
+            const gpa = totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : 0;
+            result.classList.remove('hidden');
+            result.style.backgroundColor = gpa >= 9 ? 'green' : gpa >= 8 ? 'orange' : gpa >= 6 ? 'yellow' : 'red';
+            result.textContent = `Your GPA is: ${gpa}`;
+        }
+
+        calculateBtn.addEventListener('click', calculateGPA);
+
+        // Initialize with 5 pairs
+        for (let i = 0; i < 4; i++) {
+            createInputPair();
+        }
+
+        function saveChoices() {
+            const pairs = document.querySelectorAll('.input-pair');
+            const data = Array.from(pairs).map(pair => {
+            return {
+                credits: pair.querySelector('.credits').value,
+                grades: pair.querySelector('.grades').value,
+                
+            };
+            });
+            localStorage.setItem('gpaChoices', JSON.stringify(data));
+        }
+
+        function loadChoices() {
+            const savedData = JSON.parse(localStorage.getItem('gpaChoices'));
+            totalCredits = 0; // Reset total credits
+            if (!savedData) return; // No saved data, exit function
+            if (savedData) {
+            inputContainer.innerHTML = ''; // Clear existing pairs
+            savedData.forEach(item => {
+                const inputPair = document.createElement('div');
+                inputPair.className = 'input-pair';
+                totalCredits += parseFloat(item.credits) || 0;
+                document.querySelector('.total-credits').textContent = totalCredits;
+                const creditsSelect = document.createElement('select');
+                creditsSelect.className = 'credits';
+                creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+                `;
+                creditsSelect.value = item.credits;
+
+                const gradesSelect = document.createElement('select');
+                gradesSelect.className = 'grades';
+                gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+                `;
+                gradesSelect.value = item.grades;
+
+                inputPair.appendChild(creditsSelect);
+                inputPair.appendChild(gradesSelect);
+                inputContainer.appendChild(inputPair);
+
+                creditsSelect.addEventListener('change', checkForNewPair);
+                gradesSelect.addEventListener('change', checkForNewPair);
+            });
+            }
+        }
+
+        calculateBtn.addEventListener('click', saveChoices);
+        window.addEventListener('load', loadChoices);
+    </script>
+</body>
+
+</html>
