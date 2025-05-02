@@ -16,7 +16,7 @@
             justify-content: center;
             gap: 40px;
             flex-direction: column;
-            height: 100svh;
+            min-height: 100svh;
             color: white;
         }
 
@@ -341,8 +341,10 @@
                 inputPair.appendChild(creditsSelect);
                 inputPair.appendChild(gradesSelect);
                 inputContainer.appendChild(inputPair);
-                document.getElementById('prev').value = item.prevCGPA;
-                document.getElementById('prev_creds').value = item.prevCredits;
+
+                document.getElementById('prev').value = item.prevCGPA || 0;
+                document.getElementById('prev_creds').value = item.prevCredits || 0;
+                
 
                 creditsSelect.addEventListener('change', checkForNewPair);
                 gradesSelect.addEventListener('change', checkForNewPair);
