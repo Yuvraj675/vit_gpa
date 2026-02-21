@@ -105,9 +105,14 @@
             padding: 5px 10px;
             border-radius: 20px;
             border: 1px solid #ccc;
-            margin-inline-end: 30px;
+            /* margin-inline-end: 30px; */
             
         }
+        .subject-name {
+            padding: 10px !important
+            
+        }
+
         .ctn-er {
             display: flex;
             justify-content: space-between;
@@ -157,6 +162,7 @@
     </div>
     <div id="input-container">
         <div class="input-pair">
+            <input type="text" placeholder="Subject Name" class="subject-name">
             <select class="credits">
                 <option value="0">Credits</option>
                 <option value="1">1</option>
@@ -211,6 +217,11 @@
         function createInputPair() {
             const inputPair = document.createElement('div');
             inputPair.className = 'input-pair';
+            
+            const subjectName = document.createElement('input');
+            subjectName.type = 'text';
+            subjectName.placeholder = 'Subject Name';
+            subjectName.className = 'subject-name'
 
             const creditsSelect = document.createElement('select');
             creditsSelect.className = 'credits';
@@ -238,6 +249,7 @@
                 <option value="0">F</option>
             `;
 
+            inputPair.appendChild(subjectName);
             inputPair.appendChild(creditsSelect);
             inputPair.appendChild(gradesSelect);
             inputContainer.appendChild(inputPair);
@@ -255,7 +267,7 @@
                 return sum + parseFloat(pair.querySelector('.credits').value) || 0;
             }, 0);
             document.querySelector('.total-credits').textContent = totalCredits;
-            if (credits !== "0" && grades !== "-1" && pairs.length < 10) {
+            if (credits !== "0" && pairs.length < 12) {
                 createInputPair();
             }
         }
@@ -293,6 +305,7 @@
             const pairs = document.querySelectorAll('.input-pair');
             const data = Array.from(pairs).map(pair => {
             return {
+                name: pair.querySelector('.subject-name').value,
                 credits: pair.querySelector('.credits').value,
                 grades: pair.querySelector('.grades').value,
                 prevCGPA: document.getElementById('prev').value,
@@ -313,6 +326,13 @@
                 inputPair.className = 'input-pair';
                 totalCredits += parseFloat(item.credits) || 0;
                 document.querySelector('.total-credits').textContent = totalCredits;
+
+
+                const subjectName = document.createElement('input');
+                subjectName.type='text'
+                subjectName.placeholder='Subject Name'
+                subjectName.className = 'subject-name'
+                subjectName.value=item.name;
                 const creditsSelect = document.createElement('select');
                 creditsSelect.className = 'credits';
                 creditsSelect.innerHTML = `
@@ -341,6 +361,7 @@
                 `;
                 gradesSelect.value = item.grades;
 
+                inputPair.appendChild(subjectName);
                 inputPair.appendChild(creditsSelect);
                 inputPair.appendChild(gradesSelect);
                 inputContainer.appendChild(inputPair);
