@@ -23,6 +23,7 @@
 
         #input-container {
             margin-bottom: 20px;
+            padding-inline: 20px;
         }
 
         .input-pair {
@@ -332,7 +333,7 @@
                 subjectName.type='text'
                 subjectName.placeholder='Subject Name'
                 subjectName.className = 'subject-name'
-                subjectName.value=item.name;
+                subjectName.value=item.name || '';
                 const creditsSelect = document.createElement('select');
                 creditsSelect.className = 'credits';
                 creditsSelect.innerHTML = `
