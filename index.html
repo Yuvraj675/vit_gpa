@@ -6,295 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIT CGPA Calculator</title>
 
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: rgb(53, 61, 69);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
-            flex-direction: column;
-            min-height: 100svh;
-            color: white;
-        }
-
-        #input-container {
-            margin-bottom: 20px;
-            padding-inline: 20px;
-        }
-
-        .input-pair {
-            margin-bottom: 10px;
-            display: flex;
-            gap: 30px;
-            align-items: center;
-
-        }
-
-        select {
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-            width: 100px;
-            cursor: pointer;
-
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #007BFF;
-        }
-
-        button {
-            padding: 20px 25px;
-            background-color: #007BFF;
-            border-radius: 50px;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-bottom: 30px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-
-        }
-
-        .sub {
-            font-size: 0.7rem;
-            color: gray;
-        }
-
-        h1 {
-            font-size: 3rem;
-            
-        }
-        #result-gpa, #result-cgpa {
-            font-size: 1.5rem;
-            text-align: center;
-            margin: 0px;
-            color: white;
-            
-            
-            font-weight: 600;
-            border: solid 1px #ffffff;
-            padding: 10px 20px;
-            border-radius: 50px;
-        }
-        .btn-container{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            
-        }
-        .hidden {
-            display: none;
-        }
-        .previous {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            padding: 5px 10px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-            /* margin-inline-end: 30px; */
-            
-        }
-        .subject-name {
-            padding: 10px !important
-            
-        }
-
-        .ctn-er {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .flex{
-            display: flex;
-            
-            
-            gap: 10px;
-        }
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            .flex {
-                flex-direction: column;
-                gap: 20px;
-            }
-            h1 {
-                font-size: 2rem;
-            }
-
-            /* select {
-                width: 80px;
-            } */
-
-            button {
-                padding: 15px 20px;
-            }
-        }
-
-        /* Theme toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-            width: 44px;
-            height: 44px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: white;
-            transition: background 0.2s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-        }
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.05);
-        }
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
-
-        /* Progress bar */
-        #result-progress-container {
-            margin-top: 15px;
-            width: 100%;
-            max-width: 420px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        #progress-bar {
-            width: 100%;
-            height: 14px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        #progress-fill {
-            height: 100%;
-            width: 0%;
-            border-radius: 20px;
-            transition: width 0.4s ease, background 0.4s ease;
-        }
-        #result-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.85);
-        }
-        #result-details span {
-            background: rgba(255,255,255,0.08);
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-        #copy-btn {
-            padding: 6px 14px;
-            font-size: 0.8rem;
-            background: #007BFF;
-            border-radius: 20px;
-            margin: 0;
-        }
-        #copy-btn:hover {
-            background: #0056b3;
-        }
-        #copy-btn.copied {
-            background: #28a745;
-        }
-
-        /* Shortcut hint */
-        .shortcut-hint {
-            font-size: 0.72rem;
-            color: rgba(255,255,255,0.6);
-            margin-top: 4px;
-        }
-        .shortcut-hint kbd {
-            background: rgba(255,255,255,0.12);
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 0.7rem;
-        }
-
-        /* Light theme */
-        body.light {
-            background-color: #f0f2f5;
-            color: #1a1a1a;
-        }
-        body.light .theme-toggle {
-            background: rgba(0,0,0,0.08);
-            border-color: rgba(0,0,0,0.15);
-            color: #1a1a1a;
-        }
-        body.light .theme-toggle:hover {
-            background: rgba(0,0,0,0.15);
-        }
-        body.light .sub,
-        body.light .shortcut-hint {
-            color: #555;
-        }
-        body.light select,
-        body.light input[type="text"],
-        body.light #prev,
-        body.light #prev_creds {
-            background: white;
-            color: #1a1a1a;
-            border-color: #ccc;
-        }
-        body.light #result-gpa,
-        body.light #result-cgpa {
-            color: white;
-        }
-        body.light #result-details span {
-            background: rgba(0,0,0,0.06);
-            color: #444;
-        }
-        body.light #progress-bar {
-            background: rgba(0,0,0,0.1);
-        }
+      .text-wrap-balance { text-wrap: balance; }
+      #sync-badge { display: none; }
+      body.has-cloud #sync-badge { display: inline-flex; }
+      @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.4 } }
+      .syncing .sync-dot { animation: pulse 1s infinite; }
     </style>
+
+    <!-- Supabase JS SDK (cross-device sync) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- User config: copy .env.example to .env.js and fill in your Supabase credentials -->
+    <script src=".env.js"></script>
     <meta name="google-site-verification" content="XetV9wM6WqN7V6OwfP6Xti3Fw0IRB-7B5J0Jx6IBMOo" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" }
+    </script>
 </head>
 
 <body>
-    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
-    <div style="margin-top: 20px;text-align: center;">
-        <h1>VIT CGPA Calculator</h1>
-        <p class="sub">Select the credits and grades for each subject.</p>
-        <p class="sub">Click "Calculate GPA" to see your result.</p>
-        <p class="sub">More subjects will be automatically added. Max 20 subjects</p>
-        <p class="sub">Note: 0 credits and 0 grade will not be counted.</p>
-        <p class="sub">Credits and grades are saved even after site is refreshed.</p>
-        <p class="sub">You can also enter your current CGPA and completed credits.</p>
-        <p class="sub">This will calculate your overall CGPA. Leave it blank for only GPA</p>
-        <p class="sub shortcut-hint">Shortcuts: <kbd>Ctrl/Cmd</kbd>+<kbd>Enter</kbd> Calculate &nbsp;·&nbsp; <kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Clear</p>
-        <h3 style="margin-top: 20px;margin-bottom: 0;">Total Credits: <span class='total-credits'>0</span></h3>
+<div class="min-h-screen bg-gray-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased" id="app-wrapper">
+
+    <button id="theme-toggle" class="theme-toggle fixed top-4 right-4 z-50 w-11 h-11 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white/90 dark:bg-zinc-900/90 backdrop-blur grid place-items-center text-xl shadow-sm hover:-translate-y-0.5 transition" title="Toggle theme">🌙</button>
+    <div id="sync-badge" class="offline fixed top-4 right-20 z-50 hidden items-center gap-2 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white/90 dark:bg-zinc-900/90 backdrop-blur px-3 py-1.5 text-sm" title="Cloud sync status">
+        <span class="sync-dot w-2 h-2 rounded-full bg-zinc-400"></span><span>Offline</span>
     </div>
-    <div id="input-container">
-        <div class="input-pair">
-            <input type="text" placeholder="Subject Name" class="subject-name">
-            <select class="credits">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <header class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+            <div>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-wrap-balance">VIT CGPA Calculator</h1>
+                <p class="sub text-zinc-600 dark:text-zinc-400 mt-2 text-sm sm:text-base">Select credits and grades for each subject. Calculator updates instantly.</p>
+            </div>
+            <div class="text-right">
+                <div class="text-xs uppercase tracking-wide text-zinc-500">Total Credits</div>
+                <div class="text-2xl font-semibold"><span class="total-credits">0</span></div>
+            </div>
+        </header>
+        <p class="sub shortcut-hint text-sm text-zinc-500 dark:text-zinc-400 mt-2">Shortcuts: <kbd class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-xs">Ctrl/Cmd</kbd>+<kbd class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-xs">Enter</kbd> Calculate &nbsp;·&nbsp; <kbd class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-xs">Ctrl/Cmd</kbd>+<kbd class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-xs">Shift</kbd>+<kbd class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-xs">C</kbd> Clear</p>
+    <div id="input-container" class="grid gap-3 my-8">
+        <div class="input-pair grid grid-cols-1 sm:grid-cols-[1fr_140px_140px] gap-3 items-center p-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/30">
+            <input type="text" placeholder="Subject Name" class="subject-name w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select class="credits w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="0">Credits</option>
                 <option value="1">1</option>
                 <option value="1.5">1.5</option>
@@ -304,7 +59,7 @@
                 <option value="5">5</option>
                 <option value="20">20</option>
             </select>
-            <select class="grades">
+            <select class="grades w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="-1">Grade</option>
                 <option value="10">S</option>
                 <option value="9">A</option>
@@ -316,47 +71,46 @@
             </select>
         </div>
     </div>
-    <div class="previous">
+    <div class="previous grid sm:grid-cols-2 gap-6 my-6">
         <div class="ctner">
-            <label for="prev">Current CGPA:</label>
-            <input type="text" name="prev" id="prev" autocomplete="off">
-
+            <label for="prev" class="block text-xs uppercase tracking-wide text-zinc-500 mb-1">Current CGPA</label>
+            <input type="text" name="prev" id="prev" autocomplete="off" class="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <div class="ctner">
-
-            <label for="prev_creds">Completed Credits:</label>
-            <input type="text" name="prev_creds" id="prev_creds" autocomplete="off">
+            <label for="prev_creds" class="block text-xs uppercase tracking-wide text-zinc-500 mb-1">Completed Credits</label>
+            <input type="text" name="prev_creds" id="prev_creds" autocomplete="off" class="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
     </div>
-    <div class="btn-container">
-            <button id="calculate-btn">Calculate GPA</button>
-            <button id="clear-btn">Clear All</button>
-            <div class="flex">
-                <button id="export-btn">Export</button>
-                <button id="import-btn">Import</button>
-                <button id="add-subject-btn">Add Subject</button>
-                <button id="all-s-btn">All S</button>
-                <button id="clear-grades-btn">Clear Grades</button>
+    <div class="btn-container flex flex-wrap gap-3 items-center mt-8">
+            <button id="calculate-btn" class="px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm min-h-[44px]">Calculate GPA</button>
+            <button id="clear-btn" class="px-5 py-3 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 min-h-[44px]">Clear All</button>
+            <div class="flex flex-wrap gap-2 ml-auto">
+                <button id="export-btn" class="px-4 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 min-h-[44px]">Export</button>
+                <button id="import-btn" class="px-4 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 min-h-[44px]">Import</button>
+                <button id="sync-btn" title="Sync with cloud" class="px-4 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 min-h-[44px]">☁️ Sync</button>
+                <button id="add-subject-btn" class="px-4 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 min-h-[44px]">Add Subject</button>
+                <button id="all-s-btn" class="px-4 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 min-h-[44px]">All S</button>
+                <button id="clear-grades-btn" class="px-4 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 min-h-[44px]">Clear Grades</button>
             </div>
-            <div class="flex">
-                        <p id="result-gpa" class="hidden"></p>
-                        <p id="result-cgpa" class="hidden"></p>
+            <div class="flex flex-wrap gap-3 mt-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+                        <p id="result-gpa" class="hidden px-5 py-3 rounded-full font-semibold text-white"></p>
+                        <p id="result-cgpa" class="hidden px-5 py-3 rounded-full font-semibold text-white"></p>
                     </div>
-                    <div id="result-progress-container" class="hidden">
-                        <div id="progress-bar"><div id="progress-fill"></div></div>
-                        <div id="result-details">
-                            <span id="detail-weighted-sum">Weighted sum: 0</span>
-                            <span id="detail-total-credits">Total credits: 0</span>
-                            <button id="copy-btn">Copy</button>
+                    <div id="result-progress-container" class="hidden mt-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5 shadow-sm">
+                        <div id="progress-bar" class="h-3 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                            <div id="progress-fill" class="h-full w-0 rounded-full transition-all duration-500"></div>
+                        </div>
+                        <div id="result-details" class="flex flex-wrap gap-2 mt-3 text-sm">
+                            <span id="detail-weighted-sum" class="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700"></span>
+                            <span id="detail-total-credits" class="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700"></span>
+                            <button id="copy-btn" class="ml-auto px-3 py-1 rounded-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-sm">Copy</button>
                         </div>
                     </div>
         </div>
         <input type="file" id="import-file" accept=".json" class="hidden">
-
     </div>
 
     <script>
-
         const inputContainer = document.getElementById('input-container');
         const calculateBtn = document.getElementById('calculate-btn');
         const result_gpa = document.getElementById('result-gpa');
@@ -364,15 +118,15 @@
 
         function createInputPair() {
             const inputPair = document.createElement('div');
-            inputPair.className = 'input-pair';
-            
+            inputPair.className = 'input-pair grid grid-cols-1 sm:grid-cols-[1fr_140px_140px] gap-3 items-center p-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/30';
+
             const subjectName = document.createElement('input');
             subjectName.type = 'text';
             subjectName.placeholder = 'Subject Name';
-            subjectName.className = 'subject-name'
+            subjectName.className = 'subject-name w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
 
             const creditsSelect = document.createElement('select');
-            creditsSelect.className = 'credits';
+            creditsSelect.className = 'credits w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
             creditsSelect.innerHTML = `
                 <option value="0">Credits</option>
                 <option value="1">1</option>
@@ -385,7 +139,7 @@
             `;
 
             const gradesSelect = document.createElement('select');
-            gradesSelect.className = 'grades';
+            gradesSelect.className = 'grades w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
             gradesSelect.innerHTML = `
                 <option value="-1">Grade</option>
                 <option value="10">S</option>
@@ -465,6 +219,8 @@
             };
             });
             localStorage.setItem('gpaChoices', JSON.stringify(data));
+            localStorage.setItem('gpaUpdated', Date.now().toString());
+            scheduleSync();
         }
 
         function loadChoices() {
@@ -473,14 +229,14 @@
             inputContainer.innerHTML = ''; // Clear existing pairs
             savedData.forEach(item => {
                 const inputPair = document.createElement('div');
-                inputPair.className = 'input-pair';
+                inputPair.className = 'input-pair grid grid-cols-1 sm:grid-cols-[1fr_140px_140px] gap-3 items-center p-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/30';
                 const subjectName = document.createElement('input');
                 subjectName.type='text'
                 subjectName.placeholder='Subject Name'
-                subjectName.className = 'subject-name'
+                subjectName.className = 'subject-name w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 subjectName.value=item.name || '';
                 const creditsSelect = document.createElement('select');
-                creditsSelect.className = 'credits';
+                creditsSelect.className = 'credits w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
                 creditsSelect.innerHTML = `
                 <option value="0">Credits</option>
                 <option value="1">1</option>
@@ -494,7 +250,7 @@
                 creditsSelect.value = item.credits;
 
                 const gradesSelect = document.createElement('select');
-                gradesSelect.className = 'grades';
+                gradesSelect.className = 'grades w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
                 gradesSelect.innerHTML = `
                 <option value="-1">Grade</option>
                 <option value="10">S</option>
@@ -603,12 +359,15 @@
         // Theme toggle
         const themeToggle = document.getElementById('theme-toggle');
         const bodyEl = document.body;
+        const appWrapper = document.getElementById('app-wrapper');
         function applyTheme(theme) {
             if (theme === 'light') {
                 bodyEl.classList.add('light');
+                appWrapper?.classList.remove('dark');
                 themeToggle.textContent = '☀️';
             } else {
                 bodyEl.classList.remove('light');
+                appWrapper?.classList.add('dark');
                 themeToggle.textContent = '🌙';
             }
         }
@@ -646,10 +405,14 @@
         prevField.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9.]/g, '');
             updateTotalCredits();
+            saveChoices();
+            scheduleSync();
         });
         prevCredsField.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9.]/g, '');
             updateTotalCredits();
+            saveChoices();
+            scheduleSync();
         });
 
         // Clear All button: reset form and clear localStorage
@@ -659,13 +422,13 @@
             inputContainer.innerHTML = '';
             // Recreate the initial single input pair
             const inputPair = document.createElement('div');
-            inputPair.className = 'input-pair';
+            inputPair.className = 'input-pair grid grid-cols-1 sm:grid-cols-[1fr_140px_140px] gap-3 items-center p-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/30';
             const subjectName = document.createElement('input');
             subjectName.type = 'text';
             subjectName.placeholder = 'Subject Name';
-            subjectName.className = 'subject-name';
+            subjectName.className = 'subject-name w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
             const creditsSelect = document.createElement('select');
-            creditsSelect.className = 'credits';
+            creditsSelect.className = 'credits w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
             creditsSelect.innerHTML = `
                 <option value="0">Credits</option>
                 <option value="1">1</option>
@@ -677,7 +440,7 @@
                 <option value="20">20</option>
             `;
             const gradesSelect = document.createElement('select');
-            gradesSelect.className = 'grades';
+            gradesSelect.className = 'grades w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
             gradesSelect.innerHTML = `
                 <option value="-1">Grade</option>
                 <option value="10">S</option>
@@ -702,6 +465,8 @@
             result_cgpa.classList.add('hidden');
             document.getElementById('result-progress-container').classList.add('hidden');
             updateTotalCredits();
+            saveChoices();
+            scheduleSync();
         });
 
         // EXPORT DATA: download current state as JSON
@@ -744,6 +509,8 @@
                 try {
                     const data = JSON.parse(ev.target.result);
                     applyState(data);
+                    saveChoices();
+                    scheduleSync();
                 } catch (err) {
                     alert('Invalid JSON file: ' + err.message);
                 }
@@ -760,14 +527,14 @@
             inputContainer.innerHTML = '';
             data.forEach(item => {
                 const inputPair = document.createElement('div');
-                inputPair.className = 'input-pair';
+                inputPair.className = 'input-pair grid grid-cols-1 sm:grid-cols-[1fr_140px_140px] gap-3 items-center p-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/30';
                 const subjectName = document.createElement('input');
                 subjectName.type = 'text';
                 subjectName.placeholder = 'Subject Name';
-                subjectName.className = 'subject-name';
+                subjectName.className = 'subject-name w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
                 subjectName.value = item.name || '';
                 const creditsSelect = document.createElement('select');
-                creditsSelect.className = 'credits';
+                creditsSelect.className = 'credits w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
                 creditsSelect.innerHTML = `
                 <option value="0">Credits</option>
                 <option value="1">1</option>
@@ -780,7 +547,7 @@
                 `;
                 creditsSelect.value = item.credits || '0';
                 const gradesSelect = document.createElement('select');
-                gradesSelect.className = 'grades';
+                gradesSelect.className = 'grades w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
                 gradesSelect.innerHTML = `
                 <option value="-1">Grade</option>
                 <option value="10">S</option>
@@ -805,6 +572,7 @@
                 document.getElementById('prev_creds').value = last.prevCredits || '';
             }
             updateTotalCredits();
+            saveChoices();
         }
 
         // ADD SUBJECT: manually append a new empty row
@@ -817,6 +585,8 @@
             }
             createInputPair();
             updateTotalCredits();
+            saveChoices();
+            scheduleSync();
         });
 
         // QUICK FILL: All S
@@ -826,6 +596,8 @@
                 sel.value = '10';
             });
             updateTotalCredits();
+            saveChoices();
+            scheduleSync();
         });
 
         // QUICK FILL: Clear Grades (reset to placeholder -1)
@@ -835,8 +607,176 @@
                 sel.value = '-1';
             });
             updateTotalCredits();
+            saveChoices();
+            scheduleSync();
+        });
+
+        // ===================== SUPABASE CROSS-DEVICE SYNC =====================
+        // Initialize Supabase client from window.SUPABASE_CONFIG (set in .env.js)
+        // If no config is present, sync is disabled gracefully and we fall back to localStorage only.
+        let _supabaseClient = null;
+        let syncUser = null;
+        let syncReady = false;
+        let syncTimer = null;
+        const SYNC_DEBOUNCE_MS = 1000;
+
+        const syncBadge = document.getElementById('sync-badge');
+
+        function setSyncStatus(status) {
+            // status: 'synced' | 'syncing' | 'offline' | 'disabled'
+            syncBadge.classList.remove('synced', 'syncing', 'offline');
+            const dot = syncBadge.querySelector('.sync-dot');
+            const label = syncBadge.querySelector('span:last-child');
+            if (status === 'synced') {
+                syncBadge.classList.add('synced');
+                label.textContent = 'Synced';
+            } else if (status === 'syncing') {
+                syncBadge.classList.add('syncing');
+                label.textContent = 'Syncing...';
+            } else if (status === 'offline') {
+                syncBadge.classList.add('offline');
+                label.textContent = 'Offline';
+            } else {
+                syncBadge.classList.add('offline');
+                label.textContent = 'No cloud';
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            if (type === 'error') {
+                toast.style.background = 'rgba(220,53,69,0.9)';
+            } else if (type === 'success') {
+                toast.style.background = 'rgba(40,167,69,0.9)';
+            }
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function initSupabase() {
+            const cfg = window.SUPABASE_CONFIG;
+            if (!cfg || !cfg.url || !cfg.anonKey ||
+                cfg.url === 'YOUR_SUPABASE_URL' || cfg.anonKey === 'YOUR_SUPABASE_ANON_KEY') {
+                setSyncStatus('disabled');
+                document.body.classList.remove('has-cloud');
+                return;
+            }
+            document.body.classList.add('has-cloud');
+            try {
+                _supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
+                // Anonymous sign-in so we have a user identity for RLS policies
+                _supabaseClient.auth.signInAnonymously().then(({ data, error }) => {
+                    if (error) {
+                        console.warn('Supabase anon sign-in failed:', error.message);
+                        setSyncStatus('offline');
+                        showToast('Cloud sync unavailable: ' + error.message, 'error');
+                        return;
+                    }
+                    syncUser = data.user;
+                    syncReady = true;
+                    setSyncStatus('synced');
+                    // Pull any existing cloud data on first load
+                    pullFromCloud();
+                }).catch((err) => {
+                    console.warn('Supabase init error:', err);
+                    setSyncStatus('offline');
+                });
+            } catch (err) {
+                console.warn('Supabase client creation failed:', err);
+                setSyncStatus('disabled');
+            }
+        }
+
+        function scheduleSync() {
+            if (!syncReady) return;
+            clearTimeout(syncTimer);
+            syncTimer = setTimeout(pushToCloud, SYNC_DEBOUNCE_MS);
+        }
+
+        async function pushToCloud() {
+            if (!syncReady || !syncUser) return;
+            setSyncStatus('syncing');
+            try {
+                const state = getCurrentState();
+                const { error } = await _supabaseClient
+                    .from('user_gpa_data')
+                    .upsert({
+                        user_id: syncUser.id,
+                        data: state,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'user_id' });
+                if (error) throw error;
+                setSyncStatus('synced');
+            } catch (err) {
+                console.error('Sync push failed:', err);
+                setSyncStatus('offline');
+                showToast('Sync failed: ' + err.message, 'error');
+            }
+        }
+
+        async function pullFromCloud() {
+            if (!syncReady || !syncUser) return;
+            try {
+                const { data, error } = await _supabaseClient
+                    .from('user_gpa_data')
+                    .select('data, updated_at')
+                    .eq('user_id', syncUser.id)
+                    .maybeSingle();
+                if (error) throw error;
+                if (data && data.data) {
+                    const cloudUpdated = new Date(data.updated_at).getTime();
+                    const localUpdated = localStorage.getItem('gpaUpdated');
+                    // Only apply cloud data if it's newer than local
+                    if (!localUpdated || cloudUpdated > parseInt(localUpdated, 10)) {
+                        applyState(data.data);
+                        saveChoices();
+                        setSyncStatus('synced');
+                    }
+                } else {
+                    setSyncStatus('synced');
+                }
+            } catch (err) {
+                console.error('Sync pull failed:', err);
+                setSyncStatus('offline');
+            }
+        }
+
+        // Manual sync button
+        const syncBtn = document.getElementById('sync-btn');
+        syncBtn.addEventListener('click', async function() {
+            if (!syncReady) {
+                showToast('Cloud sync not configured. Add your Supabase credentials in .env.js.', 'error');
+                return;
+            }
+            setSyncStatus('syncing');
+            await pushToCloud();
+            await pullFromCloud();
+        });
+
+        // Online/offline detection
+        window.addEventListener('online', () => {
+            if (syncReady) {
+                scheduleSync();
+            }
+        });
+        window.addEventListener('offline', () => {
+            setSyncStatus('offline');
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initSupabase();
         });
     </script>
+    <div id="toast-container" aria-live="polite"></div>
+</div>
 </body>
 
 </html>
