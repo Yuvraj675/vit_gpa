@@ -154,7 +154,7 @@
         <h1>VIT CGPA Calculator</h1>
         <p class="sub">Select the credits and grades for each subject.</p>
         <p class="sub">Click "Calculate GPA" to see your result.</p>
-        <p class="sub">More subjects will be automatically added. Max 10 subjects</p>
+        <p class="sub">More subjects will be automatically added. Max 20 subjects</p>
         <p class="sub">Note: 0 credits and 0 grade will not be counted.</p>
         <p class="sub">Credits and grades are saved even after site is refreshed.</p>
         <p class="sub">You can also enter your current CGPA and completed credits.</p>
@@ -175,7 +175,7 @@
                 <option value="20">20</option>
             </select>
             <select class="grades">
-                <option value="0">Grade</option>
+                <option value="-1">Grade</option>
                 <option value="10">S</option>
                 <option value="9">A</option>
                 <option value="8">B</option>
@@ -200,6 +200,7 @@
     </div>
     <div class="btn-container">
         <button id="calculate-btn">Calculate GPA</button>
+        <button id="clear-btn">Clear All</button>
         <div class="flex">
 
             <p id="result-gpa" class="hidden"></p>
@@ -268,9 +269,17 @@
                 return sum + parseFloat(pair.querySelector('.credits').value) || 0;
             }, 0);
             document.querySelector('.total-credits').textContent = totalCredits;
-            if (credits !== "0" && pairs.length < 12) {
+            if (credits !== "0" && pairs.length < 20) {
                 createInputPair();
             }
+        }
+
+        function updateTotalCredits() {
+            const pairs = document.querySelectorAll('.input-pair');
+            const totalCredits = Array.from(pairs).reduce((sum, pair) => {
+                return sum + parseFloat(pair.querySelector('.credits').value) || 0;
+            }, 0);
+            document.querySelector('.total-credits').textContent = totalCredits;
         }
 
         function calculateGPA() {
@@ -288,11 +297,7 @@
                 }
             });
 
-            const gpa = totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : 0;
-            return gpa
-            // result.classList.remove('hidden');
-            // result.style.backgroundColor = gpa >= 9 ? 'green' : gpa >= 8 ? 'orange' : gpa >= 6 ? 'yellow' : 'red';
-            // result.textContent = `Your GPA is: ${gpa}`;
+            return totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : 0;
         }
 
         // calculateBtn.addEventListener('click', calculateGPA);
@@ -318,17 +323,11 @@
 
         function loadChoices() {
             const savedData = JSON.parse(localStorage.getItem('gpaChoices'));
-            totalCredits = 0; // Reset total credits
             if (!savedData) return; // No saved data, exit function
-            if (savedData) {
             inputContainer.innerHTML = ''; // Clear existing pairs
             savedData.forEach(item => {
                 const inputPair = document.createElement('div');
                 inputPair.className = 'input-pair';
-                totalCredits += parseFloat(item.credits) || 0;
-                document.querySelector('.total-credits').textContent = totalCredits;
-
-
                 const subjectName = document.createElement('input');
                 subjectName.type='text'
                 subjectName.placeholder='Subject Name'
@@ -370,14 +369,12 @@
                 document.getElementById('prev').value = item.prevCGPA || 0;
                 document.getElementById('prev_creds').value = item.prevCredits || 0;
 
-
                 creditsSelect.addEventListener('change', checkForNewPair);
                 gradesSelect.addEventListener('change', checkForNewPair);
             });
-            }
+            updateTotalCredits();
         }
 
-        calculateBtn.addEventListener('click', saveChoices);
         window.addEventListener('load', loadChoices);
 
         function calculateOverallCGPA() {
@@ -417,8 +414,73 @@
             result_gpa.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // calculateBtn.removeEventListener('click', calculateGPA);
-        calculateBtn.addEventListener('click', displayResults);
+        calculateBtn.addEventListener('click', function() {
+            saveChoices();
+            displayResults();
+        });
+
+        // Numeric input validation for CGPA and Completed Credits fields
+        const prevField = document.getElementById('prev');
+        const prevCredsField = document.getElementById('prev_creds');
+        prevField.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            updateTotalCredits();
+        });
+        prevCredsField.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            updateTotalCredits();
+        });
+
+        // Clear All button: reset form and clear localStorage
+        const clearBtn = document.getElementById('clear-btn');
+        clearBtn.addEventListener('click', function() {
+            localStorage.removeItem('gpaChoices');
+            inputContainer.innerHTML = '';
+            // Recreate the initial single input pair
+            const inputPair = document.createElement('div');
+            inputPair.className = 'input-pair';
+            const subjectName = document.createElement('input');
+            subjectName.type = 'text';
+            subjectName.placeholder = 'Subject Name';
+            subjectName.className = 'subject-name';
+            const creditsSelect = document.createElement('select');
+            creditsSelect.className = 'credits';
+            creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+            `;
+            const gradesSelect = document.createElement('select');
+            gradesSelect.className = 'grades';
+            gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+            `;
+            inputPair.appendChild(subjectName);
+            inputPair.appendChild(creditsSelect);
+            inputPair.appendChild(gradesSelect);
+            inputContainer.appendChild(inputPair);
+            creditsSelect.addEventListener('change', checkForNewPair);
+            gradesSelect.addEventListener('change', checkForNewPair);
+            // Reset CGPA/credits fields
+            prevField.value = '';
+            prevCredsField.value = '';
+            // Reset results
+            result_gpa.classList.add('hidden');
+            result_cgpa.classList.add('hidden');
+            updateTotalCredits();
+        });
     </script>
 </body>
 
