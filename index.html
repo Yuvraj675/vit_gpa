@@ -717,7 +717,6 @@
         return sum + (parseFloat(pair.querySelector('.credits').value) || 0);
       }, 0);
       creditsValue.textContent = total;
-      totalCredits.textContent = `Credits: ${total}`;
     }
 
     function calculateGPA() {
@@ -905,6 +904,7 @@
     document.getElementById('clear-btn').addEventListener('click', function() {
       if(!confirm('Clear all subjects and data?')) return;
       localStorage.removeItem('gpaChoices');
+      localStorage.removeItem('gpaUpdated');
       inputContainer.innerHTML = '';
       for(let i=0; i<4; i++) createInputPair();
       document.getElementById('prev').value = '';
