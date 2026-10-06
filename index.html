@@ -145,11 +145,140 @@
                 padding: 15px 20px;
             }
         }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            width: 44px;
+            height: 44px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: white;
+            transition: background 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Progress bar */
+        #result-progress-container {
+            margin-top: 15px;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #progress-bar {
+            width: 100%;
+            height: 14px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+        #result-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.85);
+        }
+        #result-details span {
+            background: rgba(255,255,255,0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        #copy-btn {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            background: #007BFF;
+            border-radius: 20px;
+            margin: 0;
+        }
+        #copy-btn:hover {
+            background: #0056b3;
+        }
+        #copy-btn.copied {
+            background: #28a745;
+        }
+
+        /* Shortcut hint */
+        .shortcut-hint {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+        }
+        .shortcut-hint kbd {
+            background: rgba(255,255,255,0.12);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.7rem;
+        }
+
+        /* Light theme */
+        body.light {
+            background-color: #f0f2f5;
+            color: #1a1a1a;
+        }
+        body.light .theme-toggle {
+            background: rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.15);
+            color: #1a1a1a;
+        }
+        body.light .theme-toggle:hover {
+            background: rgba(0,0,0,0.15);
+        }
+        body.light .sub,
+        body.light .shortcut-hint {
+            color: #555;
+        }
+        body.light select,
+        body.light input[type="text"],
+        body.light #prev,
+        body.light #prev_creds {
+            background: white;
+            color: #1a1a1a;
+            border-color: #ccc;
+        }
+        body.light #result-gpa,
+        body.light #result-cgpa {
+            color: white;
+        }
+        body.light #result-details span {
+            background: rgba(0,0,0,0.06);
+            color: #444;
+        }
+        body.light #progress-bar {
+            background: rgba(0,0,0,0.1);
+        }
     </style>
     <meta name="google-site-verification" content="XetV9wM6WqN7V6OwfP6Xti3Fw0IRB-7B5J0Jx6IBMOo" />
 </head>
 
 <body>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
     <div style="margin-top: 20px;text-align: center;">
         <h1>VIT CGPA Calculator</h1>
         <p class="sub">Select the credits and grades for each subject.</p>
@@ -159,6 +288,7 @@
         <p class="sub">Credits and grades are saved even after site is refreshed.</p>
         <p class="sub">You can also enter your current CGPA and completed credits.</p>
         <p class="sub">This will calculate your overall CGPA. Leave it blank for only GPA</p>
+        <p class="sub shortcut-hint">Shortcuts: <kbd>Ctrl/Cmd</kbd>+<kbd>Enter</kbd> Calculate &nbsp;·&nbsp; <kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Clear</p>
         <h3 style="margin-top: 20px;margin-bottom: 0;">Total Credits: <span class='total-credits'>0</span></h3>
     </div>
     <div id="input-container">
@@ -199,13 +329,29 @@
         </div>
     </div>
     <div class="btn-container">
-        <button id="calculate-btn">Calculate GPA</button>
-        <button id="clear-btn">Clear All</button>
-        <div class="flex">
-
-            <p id="result-gpa" class="hidden"></p>
-            <p id="result-cgpa" class="hidden"></p>
+            <button id="calculate-btn">Calculate GPA</button>
+            <button id="clear-btn">Clear All</button>
+            <div class="flex">
+                <button id="export-btn">Export</button>
+                <button id="import-btn">Import</button>
+                <button id="add-subject-btn">Add Subject</button>
+                <button id="all-s-btn">All S</button>
+                <button id="clear-grades-btn">Clear Grades</button>
+            </div>
+            <div class="flex">
+                        <p id="result-gpa" class="hidden"></p>
+                        <p id="result-cgpa" class="hidden"></p>
+                    </div>
+                    <div id="result-progress-container" class="hidden">
+                        <div id="progress-bar"><div id="progress-fill"></div></div>
+                        <div id="result-details">
+                            <span id="detail-weighted-sum">Weighted sum: 0</span>
+                            <span id="detail-total-credits">Total credits: 0</span>
+                            <button id="copy-btn">Copy</button>
+                        </div>
+                    </div>
         </div>
+        <input type="file" id="import-file" accept=".json" class="hidden">
 
     </div>
 
@@ -411,8 +557,83 @@
             result_cgpa.style.backgroundColor = overallCGPA >= 9 ? 'green' : overallCGPA >= 8 ? 'orange' : overallCGPA >= 6 ? 'crimson' : 'darkred';
             result_cgpa.innerHTML = `Your Overall CGPA is: ${overallCGPA}`;
 
+            // Progress bar: full green at 10, orange ~7, red below 7
+            const progressFill = document.getElementById('progress-fill');
+            const pct = Math.min(gpa, 10) * 10;
+            progressFill.style.width = pct + '%';
+            progressFill.style.backgroundColor = gpa >= 8 ? '#28a745' : gpa >= 6 ? '#fd7e14' : '#dc3545';
+
+            // Weighted sum + total credits
+            const pairs = document.querySelectorAll('.input-pair');
+            let weightedSum = 0, totalCredits = 0;
+            pairs.forEach(pair => {
+                const credits = parseFloat(pair.querySelector('.credits').value);
+                const grade = parseInt(pair.querySelector('.grades').value);
+                if (credits > 0 && grade >= 0) {
+                    totalCredits += credits;
+                    weightedSum += credits * grade;
+                }
+            });
+            document.getElementById('detail-weighted-sum').textContent = `Weighted sum: ${weightedSum.toFixed(2)}`;
+            document.getElementById('detail-total-credits').textContent = `Total credits: ${totalCredits}`;
+
+            const progressContainer = document.getElementById('result-progress-container');
+            progressContainer.classList.remove('hidden');
+
             result_gpa.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+
+        // Copy button
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn.addEventListener('click', function() {
+            const gpa = calculateGPA();
+            const cgpa = calculateOverallCGPA();
+            const text = `GPA: ${gpa} | CGPA: ${cgpa}`;
+            navigator.clipboard.writeText(text).then(() => {
+                const original = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = original;
+                    copyBtn.classList.remove('copied');
+                }, 1500);
+            });
+        });
+
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const bodyEl = document.body;
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                bodyEl.classList.add('light');
+                themeToggle.textContent = '☀️';
+            } else {
+                bodyEl.classList.remove('light');
+                themeToggle.textContent = '🌙';
+            }
+        }
+        const savedTheme = localStorage.getItem('theme');
+        applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+        themeToggle.addEventListener('click', function() {
+            const isLight = bodyEl.classList.toggle('light');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            applyTheme(isLight ? 'light' : 'dark');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            const mod = e.ctrlKey || e.metaKey;
+            if (!mod) return;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                calculateBtn.click();
+            } else if (e.key === 'c' || e.key === 'C') {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    clearBtn.click();
+                }
+            }
+        });
 
         calculateBtn.addEventListener('click', function() {
             saveChoices();
@@ -479,6 +700,140 @@
             // Reset results
             result_gpa.classList.add('hidden');
             result_cgpa.classList.add('hidden');
+            document.getElementById('result-progress-container').classList.add('hidden');
+            updateTotalCredits();
+        });
+
+        // EXPORT DATA: download current state as JSON
+        const exportBtn = document.getElementById('export-btn');
+        exportBtn.addEventListener('click', function() {
+            const data = JSON.stringify(getCurrentState());
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vit_gpa_state.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        function getCurrentState() {
+            const pairs = document.querySelectorAll('.input-pair');
+            return Array.from(pairs).map(pair => ({
+                name: pair.querySelector('.subject-name').value,
+                credits: pair.querySelector('.credits').value,
+                grades: pair.querySelector('.grades').value,
+                prevCGPA: document.getElementById('prev').value,
+                prevCredits: document.getElementById('prev_creds').value
+            }));
+        }
+
+        // IMPORT DATA: load JSON state from file
+        const importBtn = document.getElementById('import-btn');
+        const importFile = document.getElementById('import-file');
+        importBtn.addEventListener('click', function() {
+            importFile.click();
+        });
+        importFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    applyState(data);
+                } catch (err) {
+                    alert('Invalid JSON file: ' + err.message);
+                }
+                importFile.value = ''; // reset so same file can be re-imported
+            };
+            reader.readAsText(file);
+        });
+
+        function applyState(data) {
+            if (!Array.isArray(data)) {
+                alert('Invalid state format: expected an array of subjects.');
+                return;
+            }
+            inputContainer.innerHTML = '';
+            data.forEach(item => {
+                const inputPair = document.createElement('div');
+                inputPair.className = 'input-pair';
+                const subjectName = document.createElement('input');
+                subjectName.type = 'text';
+                subjectName.placeholder = 'Subject Name';
+                subjectName.className = 'subject-name';
+                subjectName.value = item.name || '';
+                const creditsSelect = document.createElement('select');
+                creditsSelect.className = 'credits';
+                creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+                `;
+                creditsSelect.value = item.credits || '0';
+                const gradesSelect = document.createElement('select');
+                gradesSelect.className = 'grades';
+                gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+                `;
+                gradesSelect.value = item.grades || '-1';
+                inputPair.appendChild(subjectName);
+                inputPair.appendChild(creditsSelect);
+                inputPair.appendChild(gradesSelect);
+                inputContainer.appendChild(inputPair);
+                creditsSelect.addEventListener('change', checkForNewPair);
+                gradesSelect.addEventListener('change', checkForNewPair);
+            });
+            if (data.length > 0) {
+                const last = data[data.length - 1];
+                document.getElementById('prev').value = last.prevCGPA || '';
+                document.getElementById('prev_creds').value = last.prevCredits || '';
+            }
+            updateTotalCredits();
+        }
+
+        // ADD SUBJECT: manually append a new empty row
+        const addSubjectBtn = document.getElementById('add-subject-btn');
+        addSubjectBtn.addEventListener('click', function() {
+            const pairs = document.querySelectorAll('.input-pair');
+            if (pairs.length >= 20) {
+                alert('Maximum 20 subjects reached.');
+                return;
+            }
+            createInputPair();
+            updateTotalCredits();
+        });
+
+        // QUICK FILL: All S
+        const allSBtn = document.getElementById('all-s-btn');
+        allSBtn.addEventListener('click', function() {
+            document.querySelectorAll('.grades').forEach(sel => {
+                sel.value = '10';
+            });
+            updateTotalCredits();
+        });
+
+        // QUICK FILL: Clear Grades (reset to placeholder -1)
+        const clearGradesBtn = document.getElementById('clear-grades-btn');
+        clearGradesBtn.addEventListener('click', function() {
+            document.querySelectorAll('.grades').forEach(sel => {
+                sel.value = '-1';
+            });
             updateTotalCredits();
         });
     </script>
