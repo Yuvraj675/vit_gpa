@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIT CGPA Calculator</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(53, 61, 69);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-direction: column;
+            min-height: 100svh;
+            color: white;
+        }
+
+        #input-container {
+            margin-bottom: 20px;
+            padding-inline: 20px;
+        }
+
+        .input-pair {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            width: 100px;
+            cursor: pointer;
+
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007BFF;
+        }
+
+        button {
+            padding: 20px 25px;
+            background-color: #007BFF;
+            border-radius: 50px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+
+        }
+
+        .sub {
+            font-size: 0.7rem;
+            color: gray;
+        }
+
+        h1 {
+            font-size: 3rem;
+            
+        }
+        #result-gpa, #result-cgpa {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 0px;
+            color: white;
+            
+            
+            font-weight: 600;
+            border: solid 1px #ffffff;
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        .btn-container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            
+        }
+        .hidden {
+            display: none;
+        }
+        .previous {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            /* margin-inline-end: 30px; */
+            
+        }
+        .subject-name {
+            padding: 10px !important
+            
+        }
+
+        .ctn-er {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .flex{
+            display: flex;
+            
+            
+            gap: 10px;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .flex {
+                flex-direction: column;
+                gap: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+
+            /* select {
+                width: 80px;
+            } */
+
+            button {
+                padding: 15px 20px;
+            }
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            width: 44px;
+            height: 44px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: white;
+            transition: background 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Progress bar */
+        #result-progress-container {
+            margin-top: 15px;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #progress-bar {
+            width: 100%;
+            height: 14px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+        #result-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.85);
+        }
+        #result-details span {
+            background: rgba(255,255,255,0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        #copy-btn {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            background: #007BFF;
+            border-radius: 20px;
+            margin: 0;
+        }
+        #copy-btn:hover {
+            background: #0056b3;
+        }
+        #copy-btn.copied {
+            background: #28a745;
+        }
+
+        /* Shortcut hint */
+        .shortcut-hint {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+        }
+        .shortcut-hint kbd {
+            background: rgba(255,255,255,0.12);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.7rem;
+        }
+
+        /* Light theme */
+        body.light {
+            background-color: #f0f2f5;
+            color: #1a1a1a;
+        }
+        body.light .theme-toggle {
+            background: rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.15);
+            color: #1a1a1a;
+        }
+        body.light .theme-toggle:hover {
+            background: rgba(0,0,0,0.15);
+        }
+        body.light .sub,
+        body.light .shortcut-hint {
+            color: #555;
+        }
+        body.light select,
+        body.light input[type="text"],
+        body.light #prev,
+        body.light #prev_creds {
+            background: white;
+            color: #1a1a1a;
+            border-color: #ccc;
+        }
+        body.light #result-gpa,
+        body.light #result-cgpa {
+            color: white;
+        }
+        body.light #result-details span {
+            background: rgba(0,0,0,0.06);
+            color: #444;
+        }
+        body.light #progress-bar {
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* Sync badge */
+        #sync-badge {
+            position: absolute;
+            top: 10px;
+            right: 68px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 10;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        #sync-badge:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        #sync-badge .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+        #sync-badge.synced .sync-dot { background: #28a745; }
+        #sync-badge.syncing .sync-dot { background: #007BFF; animation: pulse 1s infinite; }
+        #sync-badge.offline .sync-dot { background: #dc3545; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @media (max-width: 600px) {
+            #sync-badge { right: 60px; padding: 6px 8px; font-size: 0; }
+            #sync-badge span:last-child { display: none; }
+        }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+        }
+        .toast {
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+            max-width: 90vw;
+            text-align: center;
+            pointer-events: auto;
+        }
+        body.light .toast {
+            background: rgba(255,255,255,0.95);
+            color: #1a1a1a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    </style>
+    <!-- Supabase JS SDK (cross-device sync) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- User config: copy .env.example to .env.js and fill in your Supabase credentials -->
+    <script src=".env.js"></script>
+    <meta name="google-site-verification" content="XetV9wM6WqN7V6OwfP6Xti3Fw0IRB-7B5J0Jx6IBMOo" />
+</head>
+
+<body>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+    <div id="sync-badge" class="offline" title="Cloud sync status">
+        <span class="sync-dot"></span><span>Offline</span>
+    </div>
+    <div style="margin-top: 20px;text-align: center;">
+        <h1>VIT CGPA Calculator</h1>
+        <p class="sub">Select the credits and grades for each subject.</p>
+        <p class="sub">Click "Calculate GPA" to see your result.</p>
+        <p class="sub">More subjects will be automatically added. Max 20 subjects</p>
+        <p class="sub">Note: 0 credits and 0 grade will not be counted.</p>
+        <p class="sub">Credits and grades are saved even after site is refreshed.</p>
+        <p class="sub">You can also enter your current CGPA and completed credits.</p>
+        <p class="sub">This will calculate your overall CGPA. Leave it blank for only GPA</p>
+        <p class="sub shortcut-hint">Shortcuts: <kbd>Ctrl/Cmd</kbd>+<kbd>Enter</kbd> Calculate &nbsp;·&nbsp; <kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Clear</p>
+        <h3 style="margin-top: 20px;margin-bottom: 0;">Total Credits: <span class='total-credits'>0</span></h3>
+    </div>
+    <div id="input-container">
+        <div class="input-pair">
+            <input type="text" placeholder="Subject Name" class="subject-name">
+            <select class="credits">
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+            </select>
+            <select class="grades">
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+            </select>
+        </div>
+    </div>
+    <div class="previous">
+        <div class="ctner">
+            <label for="prev">Current CGPA:</label>
+            <input type="text" name="prev" id="prev" autocomplete="off">
+
+        </div>
+        <div class="ctner">
+
+            <label for="prev_creds">Completed Credits:</label>
+            <input type="text" name="prev_creds" id="prev_creds" autocomplete="off">
+        </div>
+    </div>
+    <div class="btn-container">
+            <button id="calculate-btn">Calculate GPA</button>
+            <button id="clear-btn">Clear All</button>
+            <div class="flex">
+                <button id="export-btn">Export</button>
+                <button id="import-btn">Import</button>
+                <button id="sync-btn" title="Sync with cloud">☁️ Sync</button>
+                <button id="add-subject-btn">Add Subject</button>
+                <button id="all-s-btn">All S</button>
+                <button id="clear-grades-btn">Clear Grades</button>
+            </div>
+            <div class="flex">
+                        <p id="result-gpa" class="hidden"></p>
+                        <p id="result-cgpa" class="hidden"></p>
+                    </div>
+                    <div id="result-progress-container" class="hidden">
+                        <div id="progress-bar"><div id="progress-fill"></div></div>
+                        <div id="result-details">
+                            <span id="detail-weighted-sum">Weighted sum: 0</span>
+                            <span id="detail-total-credits">Total credits: 0</span>
+                            <button id="copy-btn">Copy</button>
+                        </div>
+                    </div>
+        </div>
+        <input type="file" id="import-file" accept=".json" class="hidden">
+
+    </div>
+
+    <script>
+
+        const inputContainer = document.getElementById('input-container');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const result_gpa = document.getElementById('result-gpa');
+        const result_cgpa = document.getElementById('result-cgpa');
+
+        function createInputPair() {
+            const inputPair = document.createElement('div');
+            inputPair.className = 'input-pair';
+            
+            const subjectName = document.createElement('input');
+            subjectName.type = 'text';
+            subjectName.placeholder = 'Subject Name';
+            subjectName.className = 'subject-name'
+
+            const creditsSelect = document.createElement('select');
+            creditsSelect.className = 'credits';
+            creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+            `;
+
+            const gradesSelect = document.createElement('select');
+            gradesSelect.className = 'grades';
+            gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+            `;
+
+            inputPair.appendChild(subjectName);
+            inputPair.appendChild(creditsSelect);
+            inputPair.appendChild(gradesSelect);
+            inputContainer.appendChild(inputPair);
+
+            creditsSelect.addEventListener('change', checkForNewPair);
+            gradesSelect.addEventListener('change', checkForNewPair);
+        }
+
+        function checkForNewPair() {
+            const pairs = document.querySelectorAll('.input-pair');
+            const lastPair = pairs[pairs.length - 1];
+            const credits = lastPair.querySelector('.credits').value;
+            const grades = lastPair.querySelector('.grades').value;
+            const totalCredits = Array.from(pairs).reduce((sum, pair) => {
+                return sum + parseFloat(pair.querySelector('.credits').value) || 0;
+            }, 0);
+            document.querySelector('.total-credits').textContent = totalCredits;
+            if (credits !== "0" && pairs.length < 20) {
+                createInputPair();
+            }
+        }
+
+        function updateTotalCredits() {
+            const pairs = document.querySelectorAll('.input-pair');
+            const totalCredits = Array.from(pairs).reduce((sum, pair) => {
+                return sum + parseFloat(pair.querySelector('.credits').value) || 0;
+            }, 0);
+            document.querySelector('.total-credits').textContent = totalCredits;
+        }
+
+        function calculateGPA() {
+            const pairs = document.querySelectorAll('.input-pair');
+            let totalCredits = 0;
+            let weightedSum = 0;
+
+            pairs.forEach(pair => {
+                const credits = parseFloat(pair.querySelector('.credits').value);
+                const grade = parseInt(pair.querySelector('.grades').value);
+
+                if (credits > 0 && grade >= 0) {
+                    totalCredits += credits;
+                    weightedSum += credits * grade;
+                }
+            });
+
+            return totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : 0;
+        }
+
+        // calculateBtn.addEventListener('click', calculateGPA);
+
+        // Initialize with 5 pairs
+        for (let i = 0; i < 4; i++) {
+            createInputPair();
+        }
+
+        function saveChoices() {
+            const pairs = document.querySelectorAll('.input-pair');
+            const data = Array.from(pairs).map(pair => {
+            return {
+                name: pair.querySelector('.subject-name').value,
+                credits: pair.querySelector('.credits').value,
+                grades: pair.querySelector('.grades').value,
+                prevCGPA: document.getElementById('prev').value,
+                prevCredits: document.getElementById('prev_creds').value
+            };
+            });
+            localStorage.setItem('gpaChoices', JSON.stringify(data));
+            localStorage.setItem('gpaUpdated', Date.now().toString());
+            scheduleSync();
+        }
+
+        function loadChoices() {
+            const savedData = JSON.parse(localStorage.getItem('gpaChoices'));
+            if (!savedData) return; // No saved data, exit function
+            inputContainer.innerHTML = ''; // Clear existing pairs
+            savedData.forEach(item => {
+                const inputPair = document.createElement('div');
+                inputPair.className = 'input-pair';
+                const subjectName = document.createElement('input');
+                subjectName.type='text'
+                subjectName.placeholder='Subject Name'
+                subjectName.className = 'subject-name'
+                subjectName.value=item.name || '';
+                const creditsSelect = document.createElement('select');
+                creditsSelect.className = 'credits';
+                creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+                `;
+                creditsSelect.value = item.credits;
+
+                const gradesSelect = document.createElement('select');
+                gradesSelect.className = 'grades';
+                gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+                `;
+                gradesSelect.value = item.grades;
+
+                inputPair.appendChild(subjectName);
+                inputPair.appendChild(creditsSelect);
+                inputPair.appendChild(gradesSelect);
+                inputContainer.appendChild(inputPair);
+
+                document.getElementById('prev').value = item.prevCGPA || 0;
+                document.getElementById('prev_creds').value = item.prevCredits || 0;
+
+                creditsSelect.addEventListener('change', checkForNewPair);
+                gradesSelect.addEventListener('change', checkForNewPair);
+            });
+            updateTotalCredits();
+        }
+
+        window.addEventListener('load', loadChoices);
+
+        function calculateOverallCGPA() {
+            const prevCGPA = parseFloat(document.getElementById('prev').value) || 0;
+            const prevCredits = parseFloat(document.getElementById('prev_creds').value) || 0;
+
+            const pairs = document.querySelectorAll('.input-pair');
+            let totalCredits = prevCredits;
+            let weightedSum = prevCGPA * prevCredits;
+
+            pairs.forEach(pair => {
+                const credits = parseFloat(pair.querySelector('.credits').value);
+                const grade = parseInt(pair.querySelector('.grades').value);
+
+                if (credits > 0 && grade >= 0) {
+                    totalCredits += credits;
+                    weightedSum += credits * grade;
+                }
+            });
+
+            const overallCGPA = totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : 0;
+            return overallCGPA;
+        }
+
+        function displayResults() {
+            const gpa = calculateGPA();
+            const overallCGPA = calculateOverallCGPA();
+
+            result_gpa.classList.remove('hidden');
+            result_gpa.style.backgroundColor = gpa >= 9 ? 'green' : gpa >= 8 ? 'orange' : gpa >= 6 ? 'crimson' : 'darkred';
+            result_gpa.innerHTML = `Your GPA is: ${gpa}`;
+
+            result_cgpa.classList.remove('hidden');
+            result_cgpa.style.backgroundColor = overallCGPA >= 9 ? 'green' : overallCGPA >= 8 ? 'orange' : overallCGPA >= 6 ? 'crimson' : 'darkred';
+            result_cgpa.innerHTML = `Your Overall CGPA is: ${overallCGPA}`;
+
+            // Progress bar: full green at 10, orange ~7, red below 7
+            const progressFill = document.getElementById('progress-fill');
+            const pct = Math.min(gpa, 10) * 10;
+            progressFill.style.width = pct + '%';
+            progressFill.style.backgroundColor = gpa >= 8 ? '#28a745' : gpa >= 6 ? '#fd7e14' : '#dc3545';
+
+            // Weighted sum + total credits
+            const pairs = document.querySelectorAll('.input-pair');
+            let weightedSum = 0, totalCredits = 0;
+            pairs.forEach(pair => {
+                const credits = parseFloat(pair.querySelector('.credits').value);
+                const grade = parseInt(pair.querySelector('.grades').value);
+                if (credits > 0 && grade >= 0) {
+                    totalCredits += credits;
+                    weightedSum += credits * grade;
+                }
+            });
+            document.getElementById('detail-weighted-sum').textContent = `Weighted sum: ${weightedSum.toFixed(2)}`;
+            document.getElementById('detail-total-credits').textContent = `Total credits: ${totalCredits}`;
+
+            const progressContainer = document.getElementById('result-progress-container');
+            progressContainer.classList.remove('hidden');
+
+            result_gpa.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Copy button
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn.addEventListener('click', function() {
+            const gpa = calculateGPA();
+            const cgpa = calculateOverallCGPA();
+            const text = `GPA: ${gpa} | CGPA: ${cgpa}`;
+            navigator.clipboard.writeText(text).then(() => {
+                const original = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = original;
+                    copyBtn.classList.remove('copied');
+                }, 1500);
+            });
+        });
+
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const bodyEl = document.body;
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                bodyEl.classList.add('light');
+                themeToggle.textContent = '☀️';
+            } else {
+                bodyEl.classList.remove('light');
+                themeToggle.textContent = '🌙';
+            }
+        }
+        const savedTheme = localStorage.getItem('theme');
+        applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+        themeToggle.addEventListener('click', function() {
+            const isLight = bodyEl.classList.toggle('light');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            applyTheme(isLight ? 'light' : 'dark');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            const mod = e.ctrlKey || e.metaKey;
+            if (!mod) return;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                calculateBtn.click();
+            } else if (e.key === 'c' || e.key === 'C') {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    clearBtn.click();
+                }
+            }
+        });
+
+        calculateBtn.addEventListener('click', function() {
+            saveChoices();
+            displayResults();
+        });
+
+        // Numeric input validation for CGPA and Completed Credits fields
+        const prevField = document.getElementById('prev');
+        const prevCredsField = document.getElementById('prev_creds');
+        prevField.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            updateTotalCredits();
+            saveChoices();
+            scheduleSync();
+        });
+        prevCredsField.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            updateTotalCredits();
+            saveChoices();
+            scheduleSync();
+        });
+
+        // Clear All button: reset form and clear localStorage
+        const clearBtn = document.getElementById('clear-btn');
+        clearBtn.addEventListener('click', function() {
+            localStorage.removeItem('gpaChoices');
+            inputContainer.innerHTML = '';
+            // Recreate the initial single input pair
+            const inputPair = document.createElement('div');
+            inputPair.className = 'input-pair';
+            const subjectName = document.createElement('input');
+            subjectName.type = 'text';
+            subjectName.placeholder = 'Subject Name';
+            subjectName.className = 'subject-name';
+            const creditsSelect = document.createElement('select');
+            creditsSelect.className = 'credits';
+            creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+            `;
+            const gradesSelect = document.createElement('select');
+            gradesSelect.className = 'grades';
+            gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+            `;
+            inputPair.appendChild(subjectName);
+            inputPair.appendChild(creditsSelect);
+            inputPair.appendChild(gradesSelect);
+            inputContainer.appendChild(inputPair);
+            creditsSelect.addEventListener('change', checkForNewPair);
+            gradesSelect.addEventListener('change', checkForNewPair);
+            // Reset CGPA/credits fields
+            prevField.value = '';
+            prevCredsField.value = '';
+            // Reset results
+            result_gpa.classList.add('hidden');
+            result_cgpa.classList.add('hidden');
+            document.getElementById('result-progress-container').classList.add('hidden');
+            updateTotalCredits();
+            saveChoices();
+            scheduleSync();
+        });
+
+        // EXPORT DATA: download current state as JSON
+        const exportBtn = document.getElementById('export-btn');
+        exportBtn.addEventListener('click', function() {
+            const data = JSON.stringify(getCurrentState());
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vit_gpa_state.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        function getCurrentState() {
+            const pairs = document.querySelectorAll('.input-pair');
+            return Array.from(pairs).map(pair => ({
+                name: pair.querySelector('.subject-name').value,
+                credits: pair.querySelector('.credits').value,
+                grades: pair.querySelector('.grades').value,
+                prevCGPA: document.getElementById('prev').value,
+                prevCredits: document.getElementById('prev_creds').value
+            }));
+        }
+
+        // IMPORT DATA: load JSON state from file
+        const importBtn = document.getElementById('import-btn');
+        const importFile = document.getElementById('import-file');
+        importBtn.addEventListener('click', function() {
+            importFile.click();
+        });
+        importFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    applyState(data);
+                    saveChoices();
+                    scheduleSync();
+                } catch (err) {
+                    alert('Invalid JSON file: ' + err.message);
+                }
+                importFile.value = ''; // reset so same file can be re-imported
+            };
+            reader.readAsText(file);
+        });
+
+        function applyState(data) {
+            if (!Array.isArray(data)) {
+                alert('Invalid state format: expected an array of subjects.');
+                return;
+            }
+            inputContainer.innerHTML = '';
+            data.forEach(item => {
+                const inputPair = document.createElement('div');
+                inputPair.className = 'input-pair';
+                const subjectName = document.createElement('input');
+                subjectName.type = 'text';
+                subjectName.placeholder = 'Subject Name';
+                subjectName.className = 'subject-name';
+                subjectName.value = item.name || '';
+                const creditsSelect = document.createElement('select');
+                creditsSelect.className = 'credits';
+                creditsSelect.innerHTML = `
+                <option value="0">Credits</option>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+                `;
+                creditsSelect.value = item.credits || '0';
+                const gradesSelect = document.createElement('select');
+                gradesSelect.className = 'grades';
+                gradesSelect.innerHTML = `
+                <option value="-1">Grade</option>
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+                `;
+                gradesSelect.value = item.grades || '-1';
+                inputPair.appendChild(subjectName);
+                inputPair.appendChild(creditsSelect);
+                inputPair.appendChild(gradesSelect);
+                inputContainer.appendChild(inputPair);
+                creditsSelect.addEventListener('change', checkForNewPair);
+                gradesSelect.addEventListener('change', checkForNewPair);
+            });
+            if (data.length > 0) {
+                const last = data[data.length - 1];
+                document.getElementById('prev').value = last.prevCGPA || '';
+                document.getElementById('prev_creds').value = last.prevCredits || '';
+            }
+            updateTotalCredits();
+            saveChoices();
+        }
+
+        // ADD SUBJECT: manually append a new empty row
+        const addSubjectBtn = document.getElementById('add-subject-btn');
+        addSubjectBtn.addEventListener('click', function() {
+            const pairs = document.querySelectorAll('.input-pair');
+            if (pairs.length >= 20) {
+                alert('Maximum 20 subjects reached.');
+                return;
+            }
+            createInputPair();
+            updateTotalCredits();
+            saveChoices();
+            scheduleSync();
+        });
+
+        // QUICK FILL: All S
+        const allSBtn = document.getElementById('all-s-btn');
+        allSBtn.addEventListener('click', function() {
+            document.querySelectorAll('.grades').forEach(sel => {
+                sel.value = '10';
+            });
+            updateTotalCredits();
+            saveChoices();
+            scheduleSync();
+        });
+
+        // QUICK FILL: Clear Grades (reset to placeholder -1)
+        const clearGradesBtn = document.getElementById('clear-grades-btn');
+        clearGradesBtn.addEventListener('click', function() {
+            document.querySelectorAll('.grades').forEach(sel => {
+                sel.value = '-1';
+            });
+            updateTotalCredits();
+            saveChoices();
+            scheduleSync();
+        });
+
+        // ===================== SUPABASE CROSS-DEVICE SYNC =====================
+        // Initialize Supabase client from window.SUPABASE_CONFIG (set in .env.js)
+        // If no config is present, sync is disabled gracefully and we fall back to localStorage only.
+        let supabase = null;
+        let syncUser = null;
+        let syncReady = false;
+        let syncTimer = null;
+        const SYNC_DEBOUNCE_MS = 1000;
+
+        const syncBadge = document.getElementById('sync-badge');
+
+        function setSyncStatus(status) {
+            // status: 'synced' | 'syncing' | 'offline' | 'disabled'
+            syncBadge.classList.remove('synced', 'syncing', 'offline');
+            const dot = syncBadge.querySelector('.sync-dot');
+            const label = syncBadge.querySelector('span:last-child');
+            if (status === 'synced') {
+                syncBadge.classList.add('synced');
+                label.textContent = 'Synced';
+            } else if (status === 'syncing') {
+                syncBadge.classList.add('syncing');
+                label.textContent = 'Syncing...';
+            } else if (status === 'offline') {
+                syncBadge.classList.add('offline');
+                label.textContent = 'Offline';
+            } else {
+                syncBadge.classList.add('offline');
+                label.textContent = 'No cloud';
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            if (type === 'error') {
+                toast.style.background = 'rgba(220,53,69,0.9)';
+            } else if (type === 'success') {
+                toast.style.background = 'rgba(40,167,69,0.9)';
+            }
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function initSupabase() {
+            const cfg = window.SUPABASE_CONFIG;
+            if (!cfg || !cfg.url || !cfg.anonKey ||
+                cfg.url === 'YOUR_SUPABASE_URL' || cfg.anonKey === 'YOUR_SUPABASE_ANON_KEY') {
+                setSyncStatus('disabled');
+                return;
+            }
+            try {
+                supabase = window.supabase.createClient(cfg.url, cfg.anonKey);
+                // Anonymous sign-in so we have a user identity for RLS policies
+                supabase.auth.signInAnonymously().then(({ data, error }) => {
+                    if (error) {
+                        console.warn('Supabase anon sign-in failed:', error.message);
+                        setSyncStatus('offline');
+                        showToast('Cloud sync unavailable: ' + error.message, 'error');
+                        return;
+                    }
+                    syncUser = data.user;
+                    syncReady = true;
+                    setSyncStatus('synced');
+                    // Pull any existing cloud data on first load
+                    pullFromCloud();
+                }).catch((err) => {
+                    console.warn('Supabase init error:', err);
+                    setSyncStatus('offline');
+                });
+            } catch (err) {
+                console.warn('Supabase client creation failed:', err);
+                setSyncStatus('disabled');
+            }
+        }
+
+        function scheduleSync() {
+            if (!syncReady) return;
+            clearTimeout(syncTimer);
+            syncTimer = setTimeout(pushToCloud, SYNC_DEBOUNCE_MS);
+        }
+
+        async function pushToCloud() {
+            if (!syncReady || !syncUser) return;
+            setSyncStatus('syncing');
+            try {
+                const state = getCurrentState();
+                const { error } = await supabase
+                    .from('user_gpa_data')
+                    .upsert({
+                        user_id: syncUser.id,
+                        data: state,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'user_id' });
+                if (error) throw error;
+                setSyncStatus('synced');
+            } catch (err) {
+                console.error('Sync push failed:', err);
+                setSyncStatus('offline');
+                showToast('Sync failed: ' + err.message, 'error');
+            }
+        }
+
+        async function pullFromCloud() {
+            if (!syncReady || !syncUser) return;
+            try {
+                const { data, error } = await supabase
+                    .from('user_gpa_data')
+                    .select('data, updated_at')
+                    .eq('user_id', syncUser.id)
+                    .maybeSingle();
+                if (error) throw error;
+                if (data && data.data) {
+                    const cloudUpdated = new Date(data.updated_at).getTime();
+                    const localUpdated = localStorage.getItem('gpaUpdated');
+                    // Only apply cloud data if it's newer than local
+                    if (!localUpdated || cloudUpdated > parseInt(localUpdated, 10)) {
+                        applyState(data.data);
+                        saveChoices();
+                        setSyncStatus('synced');
+                    }
+                } else {
+                    setSyncStatus('synced');
+                }
+            } catch (err) {
+                console.error('Sync pull failed:', err);
+                setSyncStatus('offline');
+            }
+        }
+
+        // Manual sync button
+        const syncBtn = document.getElementById('sync-btn');
+        syncBtn.addEventListener('click', async function() {
+            if (!syncReady) {
+                showToast('Cloud sync not configured. Add your Supabase credentials in .env.js.', 'error');
+                return;
+            }
+            setSyncStatus('syncing');
+            await pushToCloud();
+            await pullFromCloud();
+        });
+
+        // Online/offline detection
+        window.addEventListener('online', () => {
+            if (syncReady) {
+                scheduleSync();
+            }
+        });
+        window.addEventListener('offline', () => {
+            setSyncStatus('offline');
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initSupabase();
+        });
+    </script>
+    <div id="toast-container" aria-live="polite"></div>
+</body>
+
+</html>
