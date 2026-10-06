@@ -348,7 +348,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       background: var(--bg-subtle);
-      overflow: hidden;
+      overflow: visible;
       position: sticky;
       top: 24px;
     }
@@ -369,7 +369,7 @@
 
     .result-main {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .result-label {
@@ -391,9 +391,9 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 14px;
       padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
     }
 
     .result-card {
@@ -404,76 +404,80 @@
       font-size: 20px;
     }
 
-    /* Progress bar */
-    .progress-section {
-      margin-top: 12px;
+    /* Previous results section */
+    .calc-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
     }
 
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .progress-title {
+    .calc-label {
       font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 10px;
+    }
+
+    .prev-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-group label {
+      font-size: 11px;
       font-weight: 500;
       color: var(--text-secondary);
     }
 
-    .progress-value {
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .progress-bar {
-      height: 4px;
-      background: var(--border);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      border-radius: 999px;
-      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
-    }
-
-    /* Details */
-    .details-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .detail-chip {
-      padding: 3px 8px;
+    .input-group input {
+      height: 40px;
+      padding: 0 12px;
       border: 1px solid var(--border);
-      border-radius: 4px;
-      font-family: 'Geist Mono', monospace;
-      font-size: 10px;
-      color: var(--text-secondary);
+      border-radius: 6px;
       background: var(--bg);
+      font-size: 16px;
+      font-family: 'Geist Mono', monospace;
+      color: var(--text-primary);
+      transition: all 0.15s ease;
     }
 
-    .copy-btn {
-      margin-left: auto;
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--text-tertiary);
+    }
+
+    .input-group input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .calculate-btn-large {
+      width: 100%;
+      height: 48px;
       background: var(--accent);
       color: var(--bg);
       border: none;
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 500;
-      cursor: pointer;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
       font-family: 'Inter', sans-serif;
+      cursor: pointer;
       transition: opacity 0.15s ease;
+      margin-top: 8px;
     }
 
-    .copy-btn:hover { opacity: 0.85; }
+    .calculate-btn-large:hover {
+      opacity: 0.85;
+    }
 
     /* Keyboard hint */
     .kbd-hint {
@@ -573,7 +577,6 @@
           <div id="input-container" class="subjects-list"></div>
 
           <div class="btn-row">
-            <button id="calculate-btn" class="btn btn-primary">Calculate</button>
             <button id="clear-btn" class="btn btn-secondary">Clear All</button>
             <button id="add-subject-btn" class="btn btn-secondary">+ Add</button>
             <button id="all-s-btn" class="btn btn-secondary">All S</button>
@@ -590,23 +593,6 @@
                 Sync
               </button>
             </div>
-          </div>
-
-          <div class="section-label" style="margin-top: 16px;">Previous Results</div>
-          <div class="prev-section">
-            <div class="input-group">
-              <label for="prev">Current CGPA</label>
-              <input type="text" id="prev" placeholder="0.00" autocomplete="off">
-            </div>
-            <div class="input-group">
-              <label for="prev_creds">Completed Credits</label>
-              <input type="text" id="prev_creds" placeholder="0" autocomplete="off">
-            </div>
-          </div>
-
-          <div class="kbd-hint">
-            <div class="kbd-item"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Calculate</div>
-            <div class="kbd-item"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Clear</div>
           </div>
         </div>
 
@@ -630,20 +616,20 @@
               </div>
             </div>
 
-            <div class="progress-section">
-              <div class="progress-header">
-                <span class="progress-title">Performance</span>
-                <span class="progress-value" id="progress-value">—</span>
+            <!-- Previous Results Section -->
+            <div class="calc-section">
+              <div class="calc-label">Previous Results</div>
+              <div class="prev-section">
+                <div class="input-group">
+                  <label for="prev">Current CGPA</label>
+                  <input type="text" id="prev" placeholder="0.00" autocomplete="off">
+                </div>
+                <div class="input-group">
+                  <label for="prev_creds">Completed Credits</label>
+                  <input type="text" id="prev_creds" placeholder="0" autocomplete="off">
+                </div>
               </div>
-              <div class="progress-bar">
-                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
-              </div>
-            </div>
-
-            <div class="details-row">
-              <span class="detail-chip" id="detail-weighted-sum">Points: —</span>
-              <span class="detail-chip" id="detail-total-credits">Credits: 0</span>
-              <button id="copy-btn" class="copy-btn">Copy</button>
+              <button id="calculate-btn" class="calculate-btn-large">Calculate GPA</button>
             </div>
           </div>
         </div>
@@ -659,10 +645,6 @@
     const gpaValue = document.getElementById('gpa-value');
     const cgpaValue = document.getElementById('cgpa-value');
     const creditsValue = document.getElementById('stat-credits');
-    const progressFill = document.getElementById('progress-fill');
-    const progressValue = document.getElementById('progress-value');
-    const weightedSum = document.getElementById('detail-weighted-sum');
-    const totalCredits = document.getElementById('detail-total-credits');
 
     function getColorForGPA(gpa) {
       if (gpa >= 9) return '#16a34a';
@@ -853,41 +835,23 @@
       const gpaColor = getColorForGPA(parseFloat(gpa));
       gpaValue.style.color = gpaColor;
       cgpaValue.style.color = getColorForGPA(parseFloat(overallCGPA));
-
-      const pct = Math.min(parseFloat(gpa), 10) * 10;
-      progressFill.style.width = '0%';
-      progressFill.style.background = gpaColor;
-      setTimeout(() => {
-        progressFill.style.width = pct + '%';
-        progressValue.textContent = pct.toFixed(0) + '%';
-        progressValue.style.color = gpaColor;
-      }, 50);
-
-      let cw = 0, cc = 0;
-      inputContainer.querySelectorAll('.subject-row').forEach(pair => {
-        const credits = parseFloat(pair.querySelector('.credits').value);
-        const grade = parseInt(pair.querySelector('.grades').value);
-        if (credits > 0 && grade >= 0) {
-          cc += credits;
-          cw += credits * grade;
-        }
-      });
-      weightedSum.textContent = `Points: ${cw.toFixed(1)}`;
-      totalCredits.textContent = `Credits: ${cc}`;
     }
 
-    document.getElementById('copy-btn').addEventListener('click', function() {
-      const gpa = calculateGPA();
-      const cgpa = calculateOverallCGPA();
-      const text = `VIT GPA: ${gpa} | Overall CGPA: ${cgpa}`;
-      navigator.clipboard.writeText(text).then(() => {
-        const original = this.textContent;
-        this.textContent = 'Copied!';
-        setTimeout(() => { this.textContent = original; }, 1500);
-      });
+    document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-file').click());
+    document.getElementById('import-file').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          applyState(data);
+          saveChoices();
+          updateCredits();
+        } catch (err) { alert('Invalid file'); }
+      };
+      reader.readAsText(file);
     });
-
-    const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
     const appWrapper = document.getElementById('app-wrapper');
     
