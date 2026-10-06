@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -769,7 +769,7 @@
     }
 
     function checkForNewPair() {
-      const pairs = document.querySelectorAll('.input-pair');
+      const pairs = inputContainer.querySelectorAll('.subject-row');
       const lastPair = inputContainer.lastElementChild;
       if (!lastPair) return;
       const credits = lastPair.querySelector('.credits').value;
@@ -783,9 +783,8 @@
     function updateTotalCredits() {
       const pairs = inputContainer.querySelectorAll('.subject-row');
       const totalCredits = Array.from(pairs).reduce((sum, pair) => {
-        return sum + parseFloat(pair.querySelector('.credits').value) || 0;
+        return sum + (parseFloat(pair.querySelector('.credits').value) || 0);
       }, 0);
-      document.querySelector('.total-credits')?.textContent || 
       document.getElementById('stat-credits').textContent = totalCredits;
     }
 
@@ -830,17 +829,44 @@
 
     function loadChoices() {
       const savedData = JSON.parse(localStorage.getItem('gpaChoices'));
-      if (!savedData) return;
+      if (savedData) {
+        inputContainer.innerHTML = '';
+        savedData.forEach(item => {
+          const pair = createInputPair();
+          pair.querySelector('.subject-name').value = item.name || '';
+          pair.querySelector('.credits').value = item.credits;
+          pair.querySelector('.grades').value = item.grades;
+
+          document.getElementById('prev').value = item.prevCGPA || '';
+          document.getElementById('prev_creds').value = item.prevCredits || '';
+        });
+        updateTotalCredits();
+        return;
+      }
+      // Load test data with 12 subjects if no saved data
+      const testData = [
+        { name: 'DB', credits: '3', grades: '9' },
+        { name: 'DB Lab', credits: '1', grades: '9' },
+        { name: 'OS', credits: '3', grades: '9' },
+        { name: 'OS Lab', credits: '1', grades: '9' },
+        { name: 'AI', credits: '3', grades: '9' },
+        { name: 'Compiler', credits: '3', grades: '9' },
+        { name: 'Compiler Lab', credits: '1', grades: '9' },
+        { name: 'CN', credits: '3', grades: '9' },
+        { name: 'CN Lab', credits: '1', grades: '9' },
+        { name: 'Cloud', credits: '3', grades: '9' },
+        { name: 'ACC', credits: '1.5', grades: '9' },
+        { name: 'NPTEL', credits: '3', grades: '9' },
+      ];
       inputContainer.innerHTML = '';
-      savedData.forEach(item => {
+      testData.forEach(item => {
         const pair = createInputPair();
-        pair.querySelector('.subject-name').value = item.name || '';
+        pair.querySelector('.subject-name').value = item.name;
         pair.querySelector('.credits').value = item.credits;
         pair.querySelector('.grades').value = item.grades;
-
-        document.getElementById('prev').value = item.prevCGPA || '';
-        document.getElementById('prev_creds').value = item.prevCredits || '';
       });
+      document.getElementById('prev').value = '9.59';
+      document.getElementById('prev_creds').value = '85';
       updateTotalCredits();
     }
 
@@ -924,16 +950,18 @@
     const appWrapper = document.getElementById('app-wrapper');
     
     function applyTheme(theme) {
-      if (theme === 'dark') {
-        appWrapper.classList.add('dark');
-        themeIcon.textContent = '🌙';
-      } else {
+      if (theme === 'light') {
         appWrapper.classList.remove('dark');
+        document.documentElement.classList.remove('dark');
         themeIcon.textContent = '☀️';
+      } else {
+        appWrapper.classList.add('dark');
+        document.documentElement.classList.add('dark');
+        themeIcon.textContent = '🌙';
       }
     }
     
-    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     applyTheme(savedTheme);
     
     themeToggle.addEventListener('click', function() {
