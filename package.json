@@ -1,0 +1,26 @@
+{
+  "name": "vit_gpa",
+  "version": "1.0.0",
+  "description": "A user-friendly web tool designed for VIT students to easily calculate their Semester GPA and update their overall CGPA. Features persistent local storage, cross-device sync via Supabase, dark/light theme, and more.",
+  "main": "playwright.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yuvraj675/vit_gpa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yuvraj675/vit_gpa/issues"
+  },
+  "homepage": "https://github.com/Yuvraj675/vit_gpa#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
