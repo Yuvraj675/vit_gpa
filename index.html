@@ -222,6 +222,29 @@
     select:hover { border-color: var(--border-strong); }
     select:focus { outline: none; border-color: var(--text-tertiary); }
 
+    /* Grade select for All button */
+    .grade-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23737373' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      padding-right: 20px;
+      padding-left: 8px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background-color: var(--bg);
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .grade-select:focus {
+      outline: none;
+      border-color: var(--border-strong);
+    }
+
     /* Buttons */
     .btn-row {
       display: flex;
@@ -558,7 +581,18 @@
           <div class="btn-row">
             <button id="clear-btn" class="btn btn-secondary">Clear All</button>
             <button id="add-subject-btn" class="btn btn-secondary">+ Add</button>
-            <button id="all-s-btn" class="btn btn-secondary">All S</button>
+            <div style="display: flex; gap: 5px; align-items: center;">
+              <select id="all-grade-select" class="grade-select">
+                <option value="10">S</option>
+                <option value="9">A</option>
+                <option value="8">B</option>
+                <option value="7">C</option>
+                <option value="6">D</option>
+                <option value="5">E</option>
+                <option value="0">F</option>
+              </select>
+              <button id="all-grade-btn" class="btn btn-secondary">All</button>
+            </div>
             <button id="clear-grades-btn" class="btn btn-secondary">Clear Grades</button>
             <div style="margin-left: auto; display: flex; gap: 5px;">
               <button id="export-btn" class="btn btn-ghost btn-icon" title="Export JSON">
@@ -909,8 +943,9 @@
       inputContainer.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    document.getElementById('all-s-btn').addEventListener('click', () => {
-      inputContainer.querySelectorAll('.grades').forEach(sel => sel.value = '10');
+    document.getElementById('all-grade-btn').addEventListener('click', () => {
+      const grade = document.getElementById('all-grade-select').value;
+      inputContainer.querySelectorAll('.grades').forEach(sel => sel.value = grade);
       saveChoices();
     });
 
