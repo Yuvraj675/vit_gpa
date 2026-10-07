@@ -1392,6 +1392,20 @@
         if (e.key === 'Enter') submitBtn.click();
       });
     }
+
+    // Sign out handler
+    const signOutBtn = document.getElementById('sign-out-btn');
+    if (signOutBtn) {
+      signOutBtn.addEventListener('click', async () => {
+        if (_supabaseClient) {
+          await _supabaseClient.auth.signOut();
+          syncUser = null;
+          syncReady = false;
+          setSyncStatus('offline');
+          signOutBtn.style.display = 'none';
+        }
+      });
+    }
   </script>
 </body>
 </html>
