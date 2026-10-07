@@ -476,28 +476,16 @@
       font-size: 12px;
       color: var(--text-secondary);
       text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
 
-    .sign-in-btn {
-      padding: 4px 12px;
-      height: 28px;
-      background: var(--accent);
-      color: var(--bg);
-      border: none;
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
+    .sign-in-link {
       cursor: pointer;
-      transition: opacity 0.15s ease;
+      color: var(--accent);
+      text-decoration: underline;
     }
 
-    .sign-in-btn:hover {
-      opacity: 0.85;
+    .sign-in-link:hover {
+      color: var(--accent-hover);
     }
 
     .calculate-btn-large {
@@ -513,6 +501,98 @@
       cursor: pointer;
       transition: opacity 0.15s ease;
       margin-top: 8px;
+    }
+
+    /* Auth Modal */
+    .auth-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-modal-content {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .auth-modal-content h3 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .auth-modal-content p {
+      margin: 0 0 12px 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .auth-input {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .auth-input:focus {
+      outline: none;
+      border-color: var(--border-strong);
+    }
+
+    .auth-error {
+      color: #dc2626;
+      font-size: 12px;
+      padding: 8px 12px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 6px;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .auth-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+
+    .auth-btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+    }
+
+    .auth-btn-secondary {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
     }
 
     .calculate-btn-large:hover {
@@ -689,8 +769,7 @@
               </div>
               <button id="calculate-btn" class="calculate-btn-large">Calculate GPA</button>
               <div id="sync-warning" class="sync-warning" style="display: none;">
-                <span>Sign in to sync your data automatically</span>
-                <button id="sign-in-btn" class="sign-in-btn">Sign In</button>
+                <span id="sign-in-link" class="sign-in-link">Sign in to sync your data automatically</span>
               </div>
             </div>
           </div>
@@ -1123,24 +1202,74 @@
 
     window.addEventListener('load', initSupabase);
 
-    // Sign in button handler
-    document.getElementById('sign-in-btn').addEventListener('click', async () => {
+    // Sign in link handler
+    document.getElementById('sign-in-link').addEventListener('click', () => {
       if (!syncReady && _supabaseClient) {
+        showAuthModal();
+      }
+    });
+
+    function showAuthModal() {
+      const modal = document.createElement('div');
+      modal.className = 'auth-modal';
+      modal.innerHTML = `
+        <div class="auth-modal-content">
+          <h3>Sign In to Sync</h3>
+          <p>Your data will be saved to the cloud and accessible from any device.</p>
+          <input type="email" id="auth-email" placeholder="Email" class="auth-input">
+          <input type="password" id="auth-password" placeholder="Password" class="auth-input">
+          <div id="auth-error" class="auth-error" style="display: none;"></div>
+          <div class="auth-buttons">
+            <button id="auth-cancel" class="auth-btn auth-btn-secondary">Cancel</button>
+            <button id="auth-submit" class="auth-btn auth-btn-primary">Sign In</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.style.display = 'flex';
+
+      const emailInput = modal.querySelector('#auth-email');
+      const passwordInput = modal.querySelector('#auth-password');
+      const errorEl = modal.querySelector('#auth-error');
+      const submitBtn = modal.querySelector('#auth-submit');
+      const cancelBtn = modal.querySelector('#auth-cancel');
+
+      cancelBtn.onclick = () => {
+        document.body.removeChild(modal);
+      };
+
+      submitBtn.onclick = async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) {
+          errorEl.textContent = 'Please enter email and password';
+          errorEl.style.display = 'block';
+          return;
+        }
         try {
+          submitBtn.textContent = 'Signing in...';
+          submitBtn.disabled = true;
           const { data, error } = await _supabaseClient.auth.signInWithPassword({
-            email: prompt('Enter your email:'),
-            password: prompt('Enter your password:')
+            email, password
           });
           if (error) throw error;
           syncUser = data.user;
           syncReady = true;
           setSyncStatus('synced');
           pushToCloud();
+          document.body.removeChild(modal);
         } catch (err) {
-          alert('Sign in failed: ' + err.message);
+          errorEl.textContent = err.message;
+          errorEl.style.display = 'block';
+          submitBtn.textContent = 'Sign In';
+          submitBtn.disabled = false;
         }
-      }
-    });
+      };
+
+      passwordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submitBtn.click();
+      });
+    }
   </script>
 </body>
 </html>
