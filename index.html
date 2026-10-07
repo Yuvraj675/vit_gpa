@@ -1204,7 +1204,7 @@
 
     // Sign in link handler
     document.getElementById('sign-in-link').addEventListener('click', () => {
-      if (!syncReady && _supabaseClient) {
+      if (!syncReady) {
         showAuthModal();
       }
     });
