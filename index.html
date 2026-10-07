@@ -222,18 +222,39 @@
     select:hover { border-color: var(--border-strong); }
     select:focus { outline: none; border-color: var(--text-tertiary); }
 
-    /* Grade dropdown inside All button */
-    .grade-dropdown {
-      border: none;
-      background: transparent;
+    /* All grade button with inline dropdown */
+    .all-grade-wrapper {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .all-grade-wrapper .btn-secondary {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right: none;
+    }
+
+    .grade-select-inline {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23737373' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      padding-right: 18px;
+      padding-left: 10px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 0 5px 5px 0;
+      background-color: var(--bg);
       font-size: 12px;
       font-family: 'Inter', sans-serif;
       color: var(--text-primary);
       cursor: pointer;
     }
 
-    .grade-dropdown:focus {
+    .grade-select-inline:focus {
       outline: none;
+      border-color: var(--border-strong);
     }
 
     /* Buttons */
@@ -572,9 +593,9 @@
           <div class="btn-row">
             <button id="clear-btn" class="btn btn-secondary">Clear All</button>
             <button id="add-subject-btn" class="btn btn-secondary">+ Add</button>
-            <button id="all-grade-btn" class="btn btn-secondary" style="position: relative;">
-              <span id="all-grade-label">All</span>
-              <select id="all-grade-select" class="grade-dropdown" style="opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer;">
+            <div class="all-grade-wrapper">
+              <button id="all-grade-btn" class="btn btn-secondary">All</button>
+              <select id="all-grade-select" class="grade-select-inline">
                 <option value="10">S</option>
                 <option value="9">A</option>
                 <option value="8">B</option>
@@ -583,7 +604,7 @@
                 <option value="5">E</option>
                 <option value="0">F</option>
               </select>
-            </button>
+            </div>
             <button id="clear-grades-btn" class="btn btn-secondary">Clear Grades</button>
             <div style="margin-left: auto; display: flex; gap: 5px;">
               <button id="export-btn" class="btn btn-ghost btn-icon" title="Export JSON">
@@ -936,9 +957,9 @@
 
     document.getElementById('all-grade-select').addEventListener('change', function() {
       const grade = this.value;
-      const label = document.getElementById('all-grade-label');
+      const btnLabel = document.getElementById('all-grade-btn');
       const gradeNames = { '10': 'S', '9': 'A', '8': 'B', '7': 'C', '6': 'D', '5': 'E', '0': 'F' };
-      label.textContent = 'All ' + (gradeNames[grade] || grade);
+      btnLabel.textContent = 'All ' + (gradeNames[grade] || 'Grade');
       inputContainer.querySelectorAll('.grades').forEach(sel => sel.value = grade);
       saveChoices();
       this.value = '';
