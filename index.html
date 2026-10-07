@@ -581,18 +581,16 @@
           <div class="btn-row">
             <button id="clear-btn" class="btn btn-secondary">Clear All</button>
             <button id="add-subject-btn" class="btn btn-secondary">+ Add</button>
-            <div style="display: flex; gap: 5px; align-items: center;">
-              <select id="all-grade-select" class="grade-select">
-                <option value="10">S</option>
-                <option value="9">A</option>
-                <option value="8">B</option>
-                <option value="7">C</option>
-                <option value="6">D</option>
-                <option value="5">E</option>
-                <option value="0">F</option>
-              </select>
-              <button id="all-grade-btn" class="btn btn-secondary">All</button>
-            </div>
+            <select id="all-grade-select" class="grade-select">
+              <option value="">All Grade</option>
+              <option value="10">S</option>
+              <option value="9">A</option>
+              <option value="8">B</option>
+              <option value="7">C</option>
+              <option value="6">D</option>
+              <option value="5">E</option>
+              <option value="0">F</option>
+            </select>
             <button id="clear-grades-btn" class="btn btn-secondary">Clear Grades</button>
             <div style="margin-left: auto; display: flex; gap: 5px;">
               <button id="export-btn" class="btn btn-ghost btn-icon" title="Export JSON">
@@ -943,10 +941,12 @@
       inputContainer.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    document.getElementById('all-grade-btn').addEventListener('click', () => {
-      const grade = document.getElementById('all-grade-select').value;
+    document.getElementById('all-grade-select').addEventListener('change', function() {
+      const grade = this.value;
+      if (grade === '') return;
       inputContainer.querySelectorAll('.grades').forEach(sel => sel.value = grade);
       saveChoices();
+      this.value = ''; // Reset to placeholder
     });
 
     document.getElementById('clear-grades-btn').addEventListener('click', () => {
