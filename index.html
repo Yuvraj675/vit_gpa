@@ -847,7 +847,10 @@
     
     const savedTheme = localStorage.getItem('theme') || 'dark';
     applyTheme(savedTheme);
-    
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+
     themeToggle.addEventListener('click', function() {
       const isDark = appWrapper.classList.toggle('dark');
       const theme = isDark ? 'dark' : 'light';
