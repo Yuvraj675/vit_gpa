@@ -172,7 +172,7 @@
 
     .subject-row {
       display: grid;
-      grid-template-columns: 1fr 84px 84px;
+      grid-template-columns: 1fr 84px 84px 32px;
       gap: 8px;
       align-items: center;
       padding: 7px 10px;
@@ -184,6 +184,26 @@
 
     .subject-row:hover {
       border-color: var(--border-strong);
+    }
+
+    .subject-row .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .subject-row .delete-btn:hover {
+      color: #dc2626;
+      background: rgba(220, 38, 38, 0.1);
     }
 
     .subject-name {
@@ -497,12 +517,15 @@
       color: var(--text-secondary);
       cursor: pointer;
       margin-left: 8px;
-      display: none;
     }
 
     .sign-out-btn:hover {
       color: var(--text-primary);
       border-color: var(--border-strong);
+    }
+
+    .sign-out-btn.hidden {
+      display: none;
     }
 
     .calculate-btn-large {
@@ -646,6 +669,55 @@
       opacity: 0.85;
     }
 
+    /* Confirmation Modal */
+    .confirm-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .confirm-modal-content {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .confirm-modal-content h3 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .confirm-modal-content p {
+      margin: 0 0 12px 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .confirm-modal-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .confirm-modal-buttons .auth-btn {
+      flex: 1 1 0;
+    }
+
     .calculate-btn-large:hover {
       opacity: 0.85;
     }
@@ -701,6 +773,10 @@
         padding: 8px 10px;
       }
 
+      .subject-row .delete-btn {
+        align-self: center;
+      }
+
       select { width: 100%; }
 
       .result-value { font-size: 32px; }
@@ -738,7 +814,7 @@
             <span>VIT GPA</span>
           </a>
           <div class="header-controls">
-            <button id="sign-out-btn" class="sign-out-btn">Sign Out</button>
+            <button id="sign-out-btn" class="sign-out-btn hidden">Sign Out</button>
             <div id="sync-badge">
               <span class="sync-dot"></span>
               <span id="sync-status">Synced</span>
@@ -885,9 +961,30 @@
         <option value="0">F</option>
       `;
 
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      `;
+      deleteBtn.title = 'Delete subject';
+
+      deleteBtn.addEventListener('click', () => {
+        if (inputContainer.children.length <= 1) {
+          alert('At least one subject is required.');
+          return;
+        }
+        inputPair.remove();
+        saveChoices();
+        updateCredits();
+      });
+
       inputPair.appendChild(subjectName);
       inputPair.appendChild(creditsSelect);
       inputPair.appendChild(gradesSelect);
+      inputPair.appendChild(deleteBtn);
       inputContainer.appendChild(inputPair);
 
       creditsSelect.addEventListener('change', checkForNewPair);
@@ -895,7 +992,7 @@
       subjectName.addEventListener('input', saveChoices);
       creditsSelect.addEventListener('change', updateCredits);
       gradesSelect.addEventListener('change', updateCredits);
-      
+
       return inputPair;
     }
 
@@ -995,8 +1092,6 @@
       updateCredits();
     }
 
-    window.addEventListener('load', loadChoices);
-
     function calculateOverallCGPA() {
       const prevCGPA = parseFloat(document.getElementById('prev').value) || 0;
       const prevCredits = parseFloat(document.getElementById('prev_creds').value) || 0;
@@ -1092,9 +1187,42 @@
     calculateBtn.addEventListener('click', function() {
       saveChoices();
       displayResults();
+      saveResults();
       if (syncReady) {
         pushToCloud();
       }
+    });
+
+    function saveResults() {
+      const results = {
+        gpa: gpaValue.textContent,
+        cgpa: cgpaValue.textContent,
+        credits: creditsValue.textContent,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('gpaResults', JSON.stringify(results));
+    }
+
+    function loadResults() {
+      const saved = localStorage.getItem('gpaResults');
+      if (saved) {
+        try {
+          const results = JSON.parse(saved);
+          gpaValue.textContent = results.gpa || '—';
+          cgpaValue.textContent = results.cgpa || '—';
+          creditsValue.textContent = results.credits || '0';
+          const gpaColor = getColorForGPA(parseFloat(results.gpa));
+          gpaValue.style.color = gpaColor;
+          cgpaValue.style.color = getColorForGPA(parseFloat(results.cgpa));
+        } catch (e) {
+          // Ignore invalid saved data
+        }
+      }
+    }
+
+    window.addEventListener('load', () => {
+      loadChoices();
+      loadResults();
     });
 
     [document.getElementById('prev'), document.getElementById('prev_creds')].forEach(el => {
@@ -1210,6 +1338,16 @@
           warning.style.display = 'block';
         } else {
           warning.style.display = 'none';
+        }
+      }
+
+      // Show/hide sign-out button based on sync status
+      const signOutBtn = document.getElementById('sign-out-btn');
+      if (signOutBtn) {
+        if (status === 'synced' || status === 'syncing') {
+          signOutBtn.classList.remove('hidden');
+        } else {
+          signOutBtn.classList.add('hidden');
         }
       }
     }
@@ -1396,15 +1534,52 @@
     // Sign out handler
     const signOutBtn = document.getElementById('sign-out-btn');
     if (signOutBtn) {
-      signOutBtn.addEventListener('click', async () => {
+      signOutBtn.addEventListener('click', () => {
+        showSignOutModal();
+      });
+    }
+
+    function showSignOutModal() {
+      const modal = document.createElement('div');
+      modal.className = 'confirm-modal';
+      modal.innerHTML = `
+        <div class="confirm-modal-content">
+          <h3>Sign Out</h3>
+          <p>Are you sure you want to sign out? Your data will remain saved locally but will stop syncing to the cloud.</p>
+          <div class="confirm-modal-buttons">
+            <button id="confirm-cancel" class="auth-btn auth-btn-secondary">Cancel</button>
+            <button id="confirm-signout" class="auth-btn auth-btn-primary">Sign Out</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.style.display = 'flex';
+
+      const cancelBtn = modal.querySelector('#confirm-cancel');
+      const signOutConfirmBtn = modal.querySelector('#confirm-signout');
+
+      function closeModal() {
+        document.body.removeChild(modal);
+      }
+
+      cancelBtn.onclick = closeModal;
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      signOutConfirmBtn.onclick = async () => {
+        closeModal();
         if (_supabaseClient) {
           await _supabaseClient.auth.signOut();
           syncUser = null;
           syncReady = false;
           setSyncStatus('offline');
-          signOutBtn.style.display = 'none';
+          signOutBtn.classList.add('hidden');
         }
-      });
+      };
     }
   </script>
 </body>
