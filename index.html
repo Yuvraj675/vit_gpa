@@ -598,22 +598,34 @@
     }
 
     .auth-btn {
-      flex: 1;
+      flex: 1 1 0;
       padding: 10px 16px;
       border-radius: 6px;
       font-size: 14px;
       font-weight: 500;
       font-family: 'Inter', sans-serif;
       cursor: pointer;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.15s ease, background 0.15s ease;
       border: none;
-      background: inherit;
+    }
+
+    .auth-btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .auth-btn-primary:hover {
+      opacity: 0.85;
     }
 
     .auth-btn-secondary {
       background: var(--bg-subtle);
       color: var(--text-primary);
       border: 1px solid var(--border);
+    }
+
+    .auth-btn-secondary:hover {
+      opacity: 0.85;
     }
 
     .calculate-btn-large:hover {
@@ -1261,6 +1273,13 @@
       cancelBtn.onclick = () => {
         document.body.removeChild(modal);
       };
+
+      // Click outside to close
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          document.body.removeChild(modal);
+        }
+      });
 
       let isSignUp = false;
 
