@@ -1201,7 +1201,17 @@
         window._supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
         window.syncReady = false;
         window.syncUser = null;
-        setSyncStatus('offline');
+        // Check for existing session on page load
+        window._supabaseClient.auth.getSession().then(({ data: { session } }) => {
+          if (session && session.user) {
+            window.syncUser = session.user;
+            window.syncReady = true;
+            setSyncStatus('synced');
+            pullFromCloud();
+          } else {
+            setSyncStatus('offline');
+          }
+        }).catch(() => setSyncStatus('offline'));
       } catch (err) {
         console.log('Init error:', err.message);
         setSyncStatus('disabled');
