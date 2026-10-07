@@ -1044,7 +1044,6 @@
 
       // Update sync warning
       const warning = document.getElementById('sync-warning');
-      console.log('setSyncStatus called:', status, 'warning found:', !!warning);
       if (warning) {
         if (status === 'disabled') {
           warning.style.display = 'block';
@@ -1055,13 +1054,8 @@
     }
 
     function initSupabase() {
-      console.log('initSupabase called');
       const cfg = window.SUPABASE_CONFIG;
-      console.log('Config:', cfg);
-      if (!cfg || !cfg.url || cfg.url.includes('YOUR_')) {
-        console.log('Returning disabled due to config');
-        return setSyncStatus('disabled');
-      }
+      if (!cfg || !cfg.url || cfg.url.includes('YOUR_')) return setSyncStatus('disabled');
       try {
         _supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
         _supabaseClient.auth.signInAnonymously().then(({ data, error }) => {
