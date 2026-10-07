@@ -1144,10 +1144,10 @@
       badge.classList.add(status === 'disabled' ? 'disabled' : status);
       document.getElementById('sync-status').textContent = status.charAt(0).toUpperCase() + status.slice(1);
 
-      // Update sync warning
+      // Update sync warning - show for disabled and offline (not logged in)
       const warning = document.getElementById('sync-warning');
       if (warning) {
-        if (status === 'disabled') {
+        if (status === 'disabled' || status === 'offline') {
           warning.style.display = 'block';
         } else {
           warning.style.display = 'none';
@@ -1157,16 +1157,15 @@
 
     function initSupabase() {
       const cfg = window.SUPABASE_CONFIG;
-      if (!cfg || !cfg.url || cfg.url.includes('YOUR_')) return setSyncStatus('disabled');
+      if (!cfg || !cfg.url || cfg.url.includes('YOUR_')) {
+        return setSyncStatus('disabled');
+      }
       try {
         _supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
-        _supabaseClient.auth.signInAnonymously().then(({ data, error }) => {
-          if (error) throw error;
-          syncUser = data.user; syncReady = true;
-          setSyncStatus('synced');
-          pullFromCloud();
-        }).catch(() => setSyncStatus('offline'));
-      } catch (err) { setSyncStatus('disabled'); }
+        setSyncStatus('offline');
+      } catch (err) {
+        setSyncStatus('disabled');
+      }
     }
 
     function scheduleSync() {
