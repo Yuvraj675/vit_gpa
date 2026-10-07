@@ -1,0 +1,8 @@
+[build]
+  publish = "dist"
+  command = "bash generate-env.sh"
+
+[[redirects]]
+  from = "/.env.js"
+  to = "/supabase-config.js"
+  status = 200

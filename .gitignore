@@ -3,3 +3,8 @@ test-results/
 playwright-report/
  coverage/
 .env.js
+
+# Local Netlify folder
+.netlify
+
+dist/

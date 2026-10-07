@@ -773,9 +773,15 @@
       .title-section h1 { font-size: 18px; }
 
       .subject-row {
-        grid-template-columns: 1fr;
-        gap: 5px;
-        padding: 8px 10px;
+        grid-template-columns: 1fr 70px 70px 32px;
+        gap: 6px;
+        padding: 6px 8px;
+      }
+
+      .subject-row select,
+      .subject-row input {
+        font-size: 13px;
+        padding: 4px 6px;
       }
 
       .subject-row .delete-btn {
@@ -1404,14 +1410,20 @@
       } catch (err) { setSyncStatus('offline'); }
     }
 
-    async function pullFromCloud() {
+    async function pullFromCloud(force = false) {
       if (!syncReady || !syncUser) return;
       try {
         const { data } = await _supabaseClient.from('user_gpa_data').select('data, updated_at').eq('user_id', syncUser.id).maybeSingle();
         if (data && data.data) {
           const cloudUpdated = new Date(data.updated_at).getTime();
           const localUpdated = parseInt(localStorage.getItem('gpaUpdated'), 10) || 0;
-          if (cloudUpdated > localUpdated) applyState(data.data);
+          // Force pull on sign-in, otherwise only pull if cloud is newer
+          if (force || cloudUpdated > localUpdated) {
+            applyState(data.data);
+            // Also update localStorage with the pulled data
+            localStorage.setItem('gpaChoices', JSON.stringify(data.data));
+            localStorage.setItem('gpaUpdated', data.updated_at);
+          }
         }
       } catch (err) {}
     }
@@ -1523,6 +1535,8 @@
           syncUser = data.user;
           syncReady = true;
           setSyncStatus('synced');
+          // Pull data from cloud after sign-in to get latest state
+          pullFromCloud(true);
           pushToCloud();
           document.body.removeChild(modal);
         } catch (err) {
