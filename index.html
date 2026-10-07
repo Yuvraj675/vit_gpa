@@ -1169,7 +1169,10 @@
     }
 
     // ===================== SUPABASE SYNC =====================
-    let _supabaseClient = null, syncUser = null, syncReady = false, syncTimer = null;
+    window._supabaseClient = null;
+    window.syncUser = null;
+    window.syncReady = false;
+    window.syncTimer = null;
     const SYNC_DEBOUNCE_MS = 1500;
 
     function setSyncStatus(status) {
@@ -1195,9 +1198,12 @@
         return setSyncStatus('disabled');
       }
       try {
-        _supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
+        window._supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
+        window.syncReady = false;
+        window.syncUser = null;
         setSyncStatus('offline');
       } catch (err) {
+        console.log('Init error:', err.message);
         setSyncStatus('disabled');
       }
     }
