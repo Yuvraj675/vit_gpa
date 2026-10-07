@@ -572,15 +572,29 @@
       margin-top: 4px;
     }
 
-    .auth-btn {
-      flex: 1;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
+    .auth-toggle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .auth-toggle-link {
+      background: none;
+      border: none;
+      color: var(--accent);
       cursor: pointer;
-      transition: opacity 0.15s ease;
+      font-size: 12px;
+      text-decoration: underline;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .auth-toggle-link:hover {
+      color: var(--accent-hover);
     }
 
     .auth-btn-primary {
@@ -1213,14 +1227,18 @@
       modal.className = 'auth-modal';
       modal.innerHTML = `
         <div class="auth-modal-content">
-          <h3>Sign In to Sync</h3>
-          <p>Your data will be saved to the cloud and accessible from any device.</p>
+          <h3 id="auth-modal-title">Sign In to Sync</h3>
+          <p id="auth-modal-subtitle">Your data will be saved to the cloud and accessible from any device.</p>
           <input type="email" id="auth-email" placeholder="Email" class="auth-input">
           <input type="password" id="auth-password" placeholder="Password" class="auth-input">
           <div id="auth-error" class="auth-error" style="display: none;"></div>
           <div class="auth-buttons">
             <button id="auth-cancel" class="auth-btn auth-btn-secondary">Cancel</button>
             <button id="auth-submit" class="auth-btn auth-btn-primary">Sign In</button>
+          </div>
+          <div class="auth-toggle">
+            <span id="auth-toggle-text">Don't have an account?</span>
+            <button id="auth-toggle-btn" class="auth-toggle-link">Sign Up</button>
           </div>
         </div>
       `;
@@ -1237,6 +1255,40 @@
         document.body.removeChild(modal);
       };
 
+      let isSignUp = false;
+
+      function toggleAuthMode() {
+        isSignUp = !isSignUp;
+        const title = document.getElementById('auth-modal-title');
+        const subtitle = document.getElementById('auth-modal-subtitle');
+        const submitBtn = document.getElementById('auth-submit');
+        const toggleText = document.getElementById('auth-toggle-text');
+        const toggleBtn = document.getElementById('auth-toggle-btn');
+        const emailInput = document.getElementById('auth-email');
+        const passwordInput = document.getElementById('auth-password');
+
+        if (isSignUp) {
+          title.textContent = 'Sign Up to Sync';
+          subtitle.textContent = 'Create an account to sync your data across devices.';
+          submitBtn.textContent = 'Sign Up';
+          toggleText.textContent = 'Already have an account?';
+          toggleBtn.textContent = 'Sign In';
+          emailInput.placeholder = 'Email';
+          passwordInput.placeholder = 'Password (min 6 chars)';
+        } else {
+          title.textContent = 'Sign In to Sync';
+          subtitle.textContent = 'Your data will be saved to the cloud and accessible from any device.';
+          submitBtn.textContent = 'Sign In';
+          toggleText.textContent = 'Don\'t have an account?';
+          toggleBtn.textContent = 'Sign Up';
+          emailInput.placeholder = 'Email';
+          passwordInput.placeholder = 'Password';
+        }
+        errorEl.style.display = 'none';
+      }
+
+      document.getElementById('auth-toggle-btn').addEventListener('click', toggleAuthMode);
+
       submitBtn.onclick = async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value;
@@ -1245,12 +1297,18 @@
           errorEl.style.display = 'block';
           return;
         }
+        if (isSignUp && password.length < 6) {
+          errorEl.textContent = 'Password must be at least 6 characters';
+          errorEl.style.display = 'block';
+          return;
+        }
         try {
-          submitBtn.textContent = 'Signing in...';
+          submitBtn.textContent = isSignUp ? 'Creating account...' : 'Signing in...';
           submitBtn.disabled = true;
-          const { data, error } = await _supabaseClient.auth.signInWithPassword({
-            email, password
-          });
+          const { data, error } = isSignUp
+            ? await _supabaseClient.auth.signUp({ email, password })
+            : await _supabaseClient.auth.signInWithPassword({ email, password });
+
           if (error) throw error;
           syncUser = data.user;
           syncReady = true;
@@ -1260,7 +1318,7 @@
         } catch (err) {
           errorEl.textContent = err.message;
           errorEl.style.display = 'block';
-          submitBtn.textContent = 'Sign In';
+          submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
           submitBtn.disabled = false;
         }
       };
