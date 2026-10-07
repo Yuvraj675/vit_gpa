@@ -1044,6 +1044,7 @@
 
       // Update sync warning
       const warning = document.getElementById('sync-warning');
+      console.log('setSyncStatus called:', status, 'warning found:', !!warning);
       if (warning) {
         if (status === 'disabled') {
           warning.style.display = 'block';
@@ -1054,8 +1055,13 @@
     }
 
     function initSupabase() {
+      console.log('initSupabase called');
       const cfg = window.SUPABASE_CONFIG;
-      if (!cfg || !cfg.url || cfg.url.includes('YOUR_')) return setSyncStatus('disabled');
+      console.log('Config:', cfg);
+      if (!cfg || !cfg.url || cfg.url.includes('YOUR_')) {
+        console.log('Returning disabled due to config');
+        return setSyncStatus('disabled');
+      }
       try {
         _supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
         _supabaseClient.auth.signInAnonymously().then(({ data, error }) => {
@@ -1097,13 +1103,6 @@
         }
       } catch (err) {}
     }
-
-    document.getElementById('sync-btn').addEventListener('click', async () => {
-      if (!syncReady) return alert('Cloud sync not configured in .env.js');
-      setSyncStatus('syncing');
-      await pushToCloud();
-      await pullFromCloud();
-    });
 
     window.addEventListener('load', initSupabase);
   </script>
