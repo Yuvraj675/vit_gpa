@@ -955,14 +955,11 @@
       inputContainer.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    document.getElementById('all-grade-select').addEventListener('change', function() {
-      const grade = this.value;
-      const btnLabel = document.getElementById('all-grade-btn');
-      const gradeNames = { '10': 'S', '9': 'A', '8': 'B', '7': 'C', '6': 'D', '5': 'E', '0': 'F' };
-      btnLabel.textContent = 'All ' + (gradeNames[grade] || 'Grade');
+    document.getElementById('all-grade-btn').addEventListener('click', () => {
+      const grade = document.getElementById('all-grade-select').value;
+      if (!grade) return;
       inputContainer.querySelectorAll('.grades').forEach(sel => sel.value = grade);
       saveChoices();
-      this.value = '';
     });
 
     document.getElementById('clear-grades-btn').addEventListener('click', () => {
